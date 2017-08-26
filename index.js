@@ -14,7 +14,7 @@ function getMessage(item)
   var latest = time + 1;
 
   log('getting message for item:');
-  log(item);
+  log(item, oldest, latest);
 
   request.post({
       url: 'https://slack.com/api/channels.history',
@@ -27,7 +27,8 @@ function getMessage(item)
     },
     function(err,httpResponse,body){ 
       var body = JSON.parse(body);
-
+      log('checking body');
+      log(body);
       for (var i = 0; i < body.messages.length; i++) {
         if (body.messages[i].user == item.item_user && body.messages[i].ts == item.ts) {
           var message = messages[i];
