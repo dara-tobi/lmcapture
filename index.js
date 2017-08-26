@@ -48,6 +48,25 @@ function getMessage(event)
     });
 }
 
+function postMessageToChannel(text)
+{
+  request.post({
+      url: 'https://slack.com/api/chat.postMessage',
+      form: {
+        token: process.env.TOKEN,
+        text: text,
+        channel: '#lkgt',
+        username: 'The Media Bot'
+      }
+    },
+    function(err, httpResponse, body){
+      if (err) {
+        log('error ', err);
+      }
+    });
+
+}
+
 function findDirectMessageId(text, reporter, owner)
 {
   request.post({
@@ -65,7 +84,7 @@ function findDirectMessageId(text, reporter, owner)
     });
 }
 
-function sendDirectMessage(text, reporter, owner, reporterDm) 
+function sendDirectMessage(text, reporter, owner = null, reporterDm) 
 {
   log('text: ', text, 'reporter ', reporter, 'owner ', owner, 'reporterDm ', reporterDm);
   request.post({
@@ -84,6 +103,25 @@ function sendDirectMessage(text, reporter, owner, reporterDm)
     });
 }
 
+function sendconfirmationMessage(text, reporterDm) 
+{
+  request.post({
+      url: 'https://slack.com/api/chat.postMessage',
+      form: {
+        token: process.env.TOKEN,
+        text: 'I\'m going to tag this article with *Recommended Audience:* `' + text + '`. Is that okay?',
+        channel: reporterDm,
+        username: 'The Media Bot'
+      }
+    },
+    function(err, httpResponse, body){
+      if (err) {
+        log('error ', err);
+      }
+    });
+}
+
+
 app.get('/', function (req, res) {
    res.send('hello world');
 });
@@ -93,7 +131,19 @@ app.get('/slack/reaction', function (req, res){
 });
 
 app.post('/slack/reaction', function (req, res, next) {
-  log(req.body.event);
+  if (req.body.event.type === 'message') {
+    if (req.body.event.text) {
+      if (req.body.event.text.toLowerCase() == 'yes') {
+        postMessageTochannel('*Resource:* https://google.com *Audience:* `Junior devs`');
+      } else {
+        var text = req.body.event.text;
+        var reporterDm = req.body.event.channel;
+
+        sendconfirmationMessage(text, reporterDm);      
+      }
+    }
+  }
+
   if (req.body.event.reaction) {
     if (req.body.event.reaction === 'grinning') {
       log("message: ", getMessage(req.body.event));
