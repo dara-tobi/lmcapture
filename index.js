@@ -65,16 +65,21 @@ function findDirectMessageId(text, reporter, owner)
             var reporterDm = body.ims[i].id;
             log('dm: ', reporterDm);
             break;
+          } else {
+            log('could not find reporter dm');
           }
         }
 
         sendDirectMessage(text, reporter, owner, reporterDm);
+      } else {
+        log('body, not ok');
       }
     });
 }
 
 function sendDirectMessage(text, reporter, owner, reporterDm) 
 {
+  log('text: ', text, 'reporter ', repoter, 'owner ', owner, 'repoterDm ', repoterDm);
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
       form: {
@@ -85,6 +90,9 @@ function sendDirectMessage(text, reporter, owner, reporterDm)
       }
     },
     function(err, httpResponse, body){
+      if (err) {
+        log('error ', err);
+      }
     });
 }
 
