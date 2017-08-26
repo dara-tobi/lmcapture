@@ -26,25 +26,20 @@ function getMessage(item)
       }
     },
     function(err,httpResponse,body){ 
-      log("looking at body");
-      log(body);
-      if (body.ok) {
-        for (var i = 0; i < body.messages.length; i++) {
-          if (body.messages[i].user == item.item_user && body.messages[i].ts == item.ts) {
-            var message = messages[i];
-            break;
-          }
+      for (var i = 0; i < body.messages.length; i++) {
+        if (body.messages[i].user == item.item_user && body.messages[i].ts == item.ts) {
+          var message = messages[i];
+          break;
         }
-        if (message) {
-          log('found message');
-          var text = message.text;
-          return "the message reacted to was: " + text;
-        } else {
-          log('could not find message');
-        }
-      } else {
-        log('body, not ok');
       }
+      if (message) {
+        log('found message');
+        var text = message.text;
+        return "the message reacted to was: " + text;
+      } else {
+        log('could not find message');
+      }
+    }
   });
 }
 
