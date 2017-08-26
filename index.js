@@ -61,6 +61,7 @@ function postMessageToChannel(text)
     },
     function(err, httpResponse, body){
       if (err) {
+
         log('error ', err);
       }
     });
@@ -135,7 +136,7 @@ app.post('/slack/reaction', function (req, res, next) {
     if (req.body.event.text) {
       if (req.body.event.user) {
         if (req.body.event.text.toLowerCase() == 'yes') {
-          postMessageTochannel('*Resource:* https://google.com *Audience:* `Junior devs`');
+          postMessageToChannel('*Resource:* https://google.com *Audience:* `Junior devs`');
         } else {
           var text = req.body.event.text;
           var reporterDm = req.body.event.channel;
