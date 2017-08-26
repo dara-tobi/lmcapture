@@ -17,7 +17,7 @@ function getMessage(event)
   log('getting message for item:');
   log(event);
 
-  request.post({
+  return request.post({
       url: 'https://slack.com/api/channels.history',
       form: {
         'token': process.env.TOKEN,
