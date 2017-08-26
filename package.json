@@ -10,6 +10,7 @@
   "author": "Tuvi",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.17.2",
     "express": "^4.15.4",
     "slack": "^8.3.1"
   }
