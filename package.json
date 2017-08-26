@@ -1,0 +1,15 @@
+{
+  "name": "lmedia",
+  "version": "1.0.0",
+  "description": "learning media bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Tuvi",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.4",
+    "slack": "^8.3.1"
+  }
+}
