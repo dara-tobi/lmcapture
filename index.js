@@ -51,32 +51,17 @@ function getMessage(event)
 function findDirectMessageId(text, reporter, owner)
 {
   request.post({
-      url: 'https://slack.com/api/im.list',
+      url: 'https://slack.com/api/im.open',
       form: {
-        token: process.env.TOKEN
+        token: process.env.TOKEN,
+        user: reporter
       }
     },
     function (err, httpResponse, body) {
       var body = JSON.parse(body);
-      var reporterDm = null;
+      var reporterDm = body.channel.id;
 
-      if (body.ok && body.ims.length > 0) {
-        for (var i = 0; i < body.ims.length; i++) {
-          if (body.ims[i].user == reporter) {
-            var reporterDm = body.ims[i].id;
-            log('dm: ', reporterDm);
-            break;
-          }
-        }
-
-        if (!reporterDm) {
-          log('could not find reporter Dm');
-        }
-
-        sendDirectMessage(text, reporter, owner, reporterDm);
-      } else {
-        log('body, not ok');
-      }
+      sendDirectMessage(text, reporter, owner, reporterDm);
     });
 }
 
