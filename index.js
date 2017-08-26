@@ -38,7 +38,7 @@ function getMessage(event)
         if (message) {
           var text = message.text;
           var reporter = event.user;
-          log('repoter: ', reporter);
+          log('reporter: ', reporter);
           var owner = message.user;
 
           findDirectMessageId(text, reporter, owner);
@@ -79,7 +79,7 @@ function findDirectMessageId(text, reporter, owner)
 
 function sendDirectMessage(text, reporter, owner, reporterDm) 
 {
-  log('text: ', text, 'reporter ', repoter, 'owner ', owner, 'repoterDm ', repoterDm);
+  log('text: ', text, 'reporter ', reporter, 'owner ', owner, 'reporterDm ', reporterDm);
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
       form: {
