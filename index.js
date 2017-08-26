@@ -38,6 +38,7 @@ function getMessage(event)
         if (message) {
           var text = message.text;
           var reporter = event.user;
+          log('repoter: ', reporter);
           var owner = message.user;
 
           findDirectMessageId(text, reporter, owner);
@@ -62,6 +63,7 @@ function findDirectMessageId(text, reporter, owner)
         for (var i = 0; i < body.ims.length; i++) {
           if (body.ims[i].user == reporter) {
             var reporterDm = body.ims[i].id;
+            log('dm: ', reporterDm);
             break;
           }
         }
