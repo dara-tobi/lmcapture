@@ -12,7 +12,7 @@ app.get('/slack/reaction', function (req, res){
 
 app.post('/slack/reaction', function (req, res) {
   console.log(req.params);
-  res.send(req.params);
+  res.send(req.params.challenge);
   res.send({name: 'dara', msg: 'welcome!!'});
   res.send('POST request to homepage');
 });
