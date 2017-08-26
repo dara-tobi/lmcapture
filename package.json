@@ -4,7 +4,8 @@
   "description": "learning media bot",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "start": "node index.js"
   },
   "author": "Tuvi",
   "license": "ISC",
