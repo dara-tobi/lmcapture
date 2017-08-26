@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+var log = console.log;
 
 app.use(bodyParser.json());
 
@@ -9,12 +10,18 @@ app.get('/', function (req, res) {
 });
 
 app.get('/slack/reaction', function (req, res){
-  console.log(req.params);
+  log(req.params);
   res.send('trying to get slack challenge');
 });
 
 app.post('/slack/reaction', function (req, res, next) {
-  console.log(req.body);
+  if (req.body.event.reaction) {
+    if (req.body.event.reaction === 'grinning') {
+      log('grinning reaction added');
+    } else {
+      log('non grinning reaction added');
+    }
+  }
   res.send(req.body.challenge);
 });
 
