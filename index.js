@@ -93,6 +93,7 @@ app.get('/slack/reaction', function (req, res){
 });
 
 app.post('/slack/reaction', function (req, res, next) {
+  log(req.body.event);
   if (req.body.event.reaction) {
     if (req.body.event.reaction === 'grinning') {
       log("message: ", getMessage(req.body.event));
