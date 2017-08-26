@@ -27,20 +27,22 @@ function getMessage(event)
       var body = JSON.parse(body);
       var message = null;
 
-      for (var i = 0; i < body.messages.length; i++) {
-        if (body.messages[i].user == event.item_user && body.messages[i].ts == item.ts) {
-          message = body.messages[i];
-          break;
+      if (body.ok) {
+        for (var i = 0; i < body.messages.length; i++) {
+          if (body.messages[i].user == event.item_user && body.messages[i].ts == item.ts) {
+            message = body.messages[i];
+            break;
+          }
         }
-      }
 
-      if (message) {
-        var text = message.text;
-        var reporter = event.user;
-        var owner = message.user;
+        if (message) {
+          var text = message.text;
+          var reporter = event.user;
+          var owner = message.user;
 
-        findDirectMessageId(text, reporter, owner);
-        // return text;
+          findDirectMessageId(text, reporter, owner);
+
+        }
       }
     });
 }
