@@ -25,13 +25,11 @@ function getMessage(item)
         'latest': latest
       }
     },
-    function(err, httpResponse, body){ 
-      log(typeof(body));
-      var slackResponse = body;
-      log('logging body');
-      log(slackResponse);
-      for (var i = 0; i < slackResponse.messages.length; i++) {
-        if (slackResponse.messages[i].user == item.item_user && slackResponse.messages[i].ts == item.ts) {
+    function(err,httpResponse,body){ 
+      var body = JSON.parse(body);
+
+      for (var i = 0; i < body.messages.length; i++) {
+        if (body.messages[i].user == item.item_user && body.messages[i].ts == item.ts) {
           var message = messages[i];
           break;
         }
