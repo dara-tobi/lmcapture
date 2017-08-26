@@ -60,8 +60,8 @@ app.post('/slack/reaction', function (req, res, next) {
   if (req.body.event.reaction) {
     if (req.body.event.reaction === 'grinning') {
       // log('grinning reaction added');
-      var item = req.body.event.item;
-      log('message: '+ getMessage(item));
+
+      log('message: '+ getMessage(req.body.event));
       // log(req.body);
     } else {
       log('non grinning reaction added');
