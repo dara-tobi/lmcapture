@@ -10,4 +10,10 @@ app.get('/slack/reaction', function (req, res){
   res.send('trying to get slack challenge');
 });
 
-app.listen(8000);
+app.post('/slack/reaction', function (req, res) {
+  console.log(req.params);
+  res.send({name: 'dara', msg: 'welcome!!'});
+  res.send('POST request to homepage');
+});
+
+app.listen(process.env.PORT || 8000);
