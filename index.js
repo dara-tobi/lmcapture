@@ -36,13 +36,52 @@ function getMessage(event)
 
       if (message) {
         var text = message.text;
+        var reporter = event.user;
+        var owner = message.user;
+
+        findDirectMessageId(text, reporter, owner);
         // return text;
       }
-  }).on('data', function(data){
-    log('got data ', data);
-  }).on('response', function(response){
-    log('got response ', response);
-  });
+    });
+}
+
+function findDirectMessageId(text, reporter, owner)
+{
+  request.post({
+      url: 'https://slack.com/api/im.list',
+      form: {
+        token: process.env.TOKEN
+      }
+    },
+    function (err, httpResponse, body) {
+      var body = JSON.parse(body);
+
+      if (body.ok && body.ims.length > 0) {
+        for (var i = 0; i < body.ims.length; i++) {
+          if (body.ims[i].user == reporter) {
+            var reporterDm = body.ims[i].id;
+            break;
+          }
+        }
+
+        sendDirectMessage(text, reporter, owner, reporterDm);
+      }
+    });
+}
+
+function sendDirectMessage(text, reporter, owner, reporterDm) 
+{
+  request.post({
+      url: 'https://slack.com/api/chat.postMessage',
+      form: {
+        token: process.env.TOKEN,
+        text: 'hi <@' + reporter + '>, you marked the message `'+ text +'` as important. So, now, how far?',
+        channel: reporterDm,
+        username: 'The Media Bot'
+      }
+    },
+    function(err, httpResponse, body){
+    });
 }
 
 app.get('/', function (req, res) {
