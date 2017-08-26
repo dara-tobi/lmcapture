@@ -133,14 +133,17 @@ app.get('/slack/reaction', function (req, res){
 app.post('/slack/reaction', function (req, res, next) {
   if (req.body.event.type === 'message') {
     if (req.body.event.text) {
-      if (req.body.event.text.toLowerCase() == 'yes') {
-        postMessageTochannel('*Resource:* https://google.com *Audience:* `Junior devs`');
-      } else {
-        var text = req.body.event.text;
-        var reporterDm = req.body.event.channel;
+      if (req.body.event.user) {
+        if (req.body.event.text.toLowerCase() == 'yes') {
+          postMessageTochannel('*Resource:* https://google.com *Audience:* `Junior devs`');
+        } else {
+          var text = req.body.event.text;
+          var reporterDm = req.body.event.channel;
 
-        // sendconfirmationMessage(text, reporterDm);      
+          sendconfirmationMessage(text, reporterDm);
+        }
       }
+
     }
   }
 
