@@ -14,7 +14,7 @@ function getMessage(event)
   var oldest = time - 1;
   var latest = time + 1;
 
-  return request.post({
+  request.post({
       url: 'https://slack.com/api/channels.history',
       form: {
         'token': process.env.TOKEN,
@@ -36,6 +36,7 @@ function getMessage(event)
 
       if (message) {
         var text = message.text;
+        return text;
       }
   });
 }
@@ -51,7 +52,7 @@ app.get('/slack/reaction', function (req, res){
 app.post('/slack/reaction', function (req, res, next) {
   if (req.body.event.reaction) {
     if (req.body.event.reaction === 'grinning') {
-      getMessage(req.body.event);
+      log("message: ", getMessage(req.body.event));
     }
   }
   
