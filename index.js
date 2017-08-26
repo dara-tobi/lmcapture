@@ -14,6 +14,7 @@ app.get('/slack/reaction', function (req, res){
 });
 
 app.post('/slack/reaction', function (req, res, next) {
+  console.log(req.body);
   res.send(req.body.challenge);
 });
 
