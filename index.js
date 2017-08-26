@@ -21,6 +21,9 @@ app.post('/slack/reaction', function (req, res, next) {
     } else {
       log('non grinning reaction added');
     }
+  } else {
+    log('no event reaction');
+    log(req.body);
   }
   res.send(req.body.challenge);
 });
