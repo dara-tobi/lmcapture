@@ -7,14 +7,15 @@ var request = require('request');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-function getMessage(item)
+function getMessage(event)
 {
+  var item = event.item;
   var time = Math.round(item.ts);
   var oldest = time - 1;
   var latest = time + 1;
 
   log('getting message for item:');
-  log(item, oldest, latest);
+  log(event);
 
   request.post({
       url: 'https://slack.com/api/channels.history',
@@ -30,7 +31,7 @@ function getMessage(item)
       log('checking body');
       log(body);
       for (var i = 0; i < body.messages.length; i++) {
-        if (body.messages[i].user == item.item_user && body.messages[i].ts == item.ts) {
+        if (body.messages[i].user == event.item_user && body.messages[i].ts == item.ts) {
           var message = messages[i];
           break;
         }
