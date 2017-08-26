@@ -26,6 +26,7 @@ function getMessage(item)
       }
     },
     function(err, httpResponse, body){ 
+      log(typeof(body));
       var slackResponse = body;
       log('logging body');
       log(slackResponse);
