@@ -13,10 +13,13 @@ function getMessage(item)
   var oldest = time - 1;
   var latest = time + 1;
 
+  log('getting message for item:');
+  log(item);
+
   request.post({
       url: 'https://slack.com/api/channels.history',
       form: {
-        'token': 'xoxp-65743207921-65738846263-231467044272-948821a9fe039a287bde36f84c6e894a',
+        'token': process.env.TOKEN,
         'channel': item.channel,
         'oldest': oldest,
         'latest': latest
@@ -28,12 +31,18 @@ function getMessage(item)
         for (var i = 0; i < body.messages.length; i++) {
           if (body.messages[i].user == item.item_user && body.messages[i].ts == item.ts) {
             var message = messages[i];
+            break;
           }
         }
         if (message) {
+          log('found message');
           var text = message.text;
           return "the message reacted to was: " + text;
+        } else {
+          log('could not find message');
         }
+      } else {
+        log('body, not ok');
       }
   });
 }
@@ -53,7 +62,7 @@ app.post('/slack/reaction', function (req, res, next) {
     if (req.body.event.reaction === 'grinning') {
       // log('grinning reaction added');
       var item = req.body.event.item;
-      log(getMessage(item));
+      log('message: '+ getMessage(item));
       // log(req.body);
     } else {
       log('non grinning reaction added');
