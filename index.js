@@ -58,6 +58,7 @@ function findDirectMessageId(text, reporter, owner)
     },
     function (err, httpResponse, body) {
       var body = JSON.parse(body);
+      var reporterDm = null;
 
       if (body.ok && body.ims.length > 0) {
         for (var i = 0; i < body.ims.length; i++) {
@@ -65,9 +66,11 @@ function findDirectMessageId(text, reporter, owner)
             var reporterDm = body.ims[i].id;
             log('dm: ', reporterDm);
             break;
-          } else {
-            log('could not find reporter dm');
           }
+        }
+
+        if (!reporterDm) {
+          log('could not find reporter Dm');
         }
 
         sendDirectMessage(text, reporter, owner, reporterDm);
