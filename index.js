@@ -139,7 +139,7 @@ app.post('/slack/reaction', function (req, res, next) {
         var text = req.body.event.text;
         var reporterDm = req.body.event.channel;
 
-        sendconfirmationMessage(text, reporterDm);      
+        // sendconfirmationMessage(text, reporterDm);      
       }
     }
   }
