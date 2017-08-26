@@ -26,13 +26,13 @@ function getMessage(event)
         'latest': latest
       }
     },
-    function(err,httpResponse,body){ 
+    function(err, httpResponse, body){ 
       var body = JSON.parse(body);
       log('checking body');
       log(body);
       for (var i = 0; i < body.messages.length; i++) {
         if (body.messages[i].user == event.item_user && body.messages[i].ts == item.ts) {
-          var message = messages[i];
+          var message = body.messages[i];
           break;
         }
       }
