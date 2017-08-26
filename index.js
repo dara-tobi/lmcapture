@@ -14,8 +14,8 @@ function getMessage(event)
   var oldest = time - 1;
   var latest = time + 1;
 
-  log('getting message for item:');
-  log(event);
+  // log('getting message for item:');
+  // log(event);
 
   return request.post({
       url: 'https://slack.com/api/channels.history',
@@ -28,8 +28,8 @@ function getMessage(event)
     },
     function(err, httpResponse, body){ 
       var body = JSON.parse(body);
-      log('checking body');
-      log(body);
+      // log('checking body');
+      // log(body);
       for (var i = 0; i < body.messages.length; i++) {
         if (body.messages[i].user == event.item_user && body.messages[i].ts == item.ts) {
           var message = body.messages[i];
@@ -39,6 +39,8 @@ function getMessage(event)
       if (message) {
         log('found message');
         var text = message.text;
+        log(text);
+        log('returning message');
         return "the message reacted to was: " + text;
       } else {
         log('could not find message');
@@ -61,14 +63,14 @@ app.post('/slack/reaction', function (req, res, next) {
     if (req.body.event.reaction === 'grinning') {
       // log('grinning reaction added');
 
-      log('message: '+ getMessage(req.body.event));
+      log('message: '+ JSON.stringify(getMessage(req.body.event)));
       // log(req.body);
     } else {
       log('non grinning reaction added');
     }
   } else {
     log('no event reaction');
-    log(req.body);
+    // log(req.body);
   }
   res.send(req.body.challenge);
 });
