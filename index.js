@@ -26,7 +26,8 @@ function getMessage(item)
       }
     },
     function(err,httpResponse,body){ 
-      // log(body);
+      log("looking at body");
+      log(body);
       if (body.ok) {
         for (var i = 0; i < body.messages.length; i++) {
           if (body.messages[i].user == item.item_user && body.messages[i].ts == item.ts) {
