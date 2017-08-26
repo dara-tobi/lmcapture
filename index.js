@@ -26,6 +26,7 @@ function getMessage(item)
       }
     },
     function(err,httpResponse,body){ 
+      var body = body;
       for (var i = 0; i < body.messages.length; i++) {
         if (body.messages[i].user == item.item_user && body.messages[i].ts == item.ts) {
           var message = messages[i];
