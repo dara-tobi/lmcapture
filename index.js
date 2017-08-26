@@ -14,9 +14,6 @@ function getMessage(event)
   var oldest = time - 1;
   var latest = time + 1;
 
-  // log('getting message for item:');
-  // log(event);
-
   return request.post({
       url: 'https://slack.com/api/channels.history',
       form: {
@@ -28,51 +25,39 @@ function getMessage(event)
     },
     function(err, httpResponse, body){ 
       var body = JSON.parse(body);
-      // log('checking body');
-      // log(body);
+      var message = null;
+
       for (var i = 0; i < body.messages.length; i++) {
         if (body.messages[i].user == event.item_user && body.messages[i].ts == item.ts) {
-          var message = body.messages[i];
+          message = body.messages[i];
           break;
         }
       }
+
       if (message) {
-        log('found message');
         var text = message.text;
-        log(text);
-        log('returning message');
-        return "the message reacted to was: " + text;
-      } else {
-        log('could not find message');
       }
   });
 }
-
 
 app.get('/', function (req, res) {
    res.send('hello world');
 });
 
 app.get('/slack/reaction', function (req, res){
-  log(req.params);
-  res.send('trying to get slack challenge');
+  log('hi');
 });
 
 app.post('/slack/reaction', function (req, res, next) {
   if (req.body.event.reaction) {
     if (req.body.event.reaction === 'grinning') {
-      // log('grinning reaction added');
-
-      log('message: '+ JSON.stringify(getMessage(req.body.event)));
-      // log(req.body);
-    } else {
-      log('non grinning reaction added');
+      getMessage(req.body.event);
     }
-  } else {
-    log('no event reaction');
-    // log(req.body);
   }
-  res.send(req.body.challenge);
+  
+  if (req.body.challenge) {
+    res.send(req.body.challenge);
+  }
 });
 
 app.listen(process.env.PORT || 8000);
