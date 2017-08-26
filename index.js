@@ -36,8 +36,12 @@ function getMessage(event)
 
       if (message) {
         var text = message.text;
-        return text;
+        // return text;
       }
+  }).on('data', function(data){
+    log('got data ', data);
+  }).on('response', function(response){
+    log('got response ', response);
   });
 }
 
