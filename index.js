@@ -39,7 +39,6 @@ function getMessage(item)
       } else {
         log('could not find message');
       }
-    }
   });
 }
 
