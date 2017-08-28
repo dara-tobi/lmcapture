@@ -19,14 +19,14 @@ const sequelize = new Sequelize('', '', '', {
   storage: 'database.sqlite'
 });
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log('Connection has been established successfully.');
-  })
-  .catch(err => {
-    console.error('Unable to connect to the database:', err);
-  });
+// sequelize
+//   .authenticate()
+//   .then(() => {
+//     console.log('Connection has been established successfully.');
+//   })
+//   .catch(err => {
+//     console.error('Unable to connect to the database:', err);
+//   });
 
 
 app.use(bodyParser.json());
@@ -117,7 +117,7 @@ function sendDirectMessage(text, reporter, owner = null, reporterDm)
       url: 'https://slack.com/api/chat.postMessage',
       form: {
         token: process.env.TOKEN,
-        text: 'hi <@' + reporter + '>, you marked the message `'+ text +'` as important. So, now, how far?',
+        text: 'Hi <@' + reporter + '>, you marked the resource `'+ text +'` as recommendable. What audience would you recommend the resource to?',
         channel: reporterDm,
         username: 'The Media Bot'
       }
