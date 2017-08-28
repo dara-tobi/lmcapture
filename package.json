@@ -13,6 +13,8 @@
     "body-parser": "^1.17.2",
     "express": "^4.15.4",
     "request": "^2.81.0",
-    "slack": "^8.3.1"
+    "sequelize": "^4.7.5",
+    "slack": "^8.3.1",
+    "sqlite3": "^3.1.9"
   }
 }
