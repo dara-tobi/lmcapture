@@ -3,21 +3,21 @@ var app = express();
 var bodyParser = require('body-parser');
 var log = console.log;
 var request = require('request');
-var Sequelize = require('sequelize');
+// var Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('', '', '', {
-  host: 'localhost',
-  dialect: 'sqlite',
+// const sequelize = new Sequelize('', '', '', {
+//   host: 'localhost',
+//   dialect: 'sqlite',
 
-  pool: {
-    max: 5,
-    min: 0,
-    idle: 10000
-  },
+//   pool: {
+//     max: 5,
+//     min: 0,
+//     idle: 10000
+//   },
 
-  // SQLite only
-  storage: 'database.sqlite'
-});
+//   // SQLite only
+//   storage: 'database.sqlite'
+// });
 
 // sequelize
 //   .authenticate()
