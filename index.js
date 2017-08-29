@@ -156,6 +156,10 @@ app.get('/slack/reaction', function (req, res){
   log('hi');
 });
 
+app.get('/slack/auth', function (req, res) {
+  app.redirect('https://slack.com/oauth/authorize?&client_id=65743207921.231877010403&scope=reactions:read,chat:write:bot,incoming-webhook,emoji:read,channels:history,im:history,im:read,im:write,bot');
+});
+
 app.post('/slack/reaction', function (req, res, next) {
   if (req.body.event.type === 'message') {
     if (req.body.event.text) {
