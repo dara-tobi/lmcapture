@@ -78,7 +78,7 @@ function postMessageToChannel(text)
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
       form: {
-        token: process.env.TOKEN,
+        token: process.env.BOT_TOKEN,
         text: text,
         channel: '#lkgt',
         username: 'The Media Bot'
@@ -129,12 +129,12 @@ function sendDirectMessage(text, reporter, owner = null, reporterDm)
     });
 }
 
-function sendconfirmationMessage(text, reporterDm) 
+funcCion sendconfirmationMessage(text, reporterDm) 
 {
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
       form: {
-        token: process.env.TOKEN,
+        token: process.env.BOT_TOKEN,
         text: 'I\'m going to tag this article with *Recommended Audience:* `' + text + '`. Is that okay?',
         channel: reporterDm,
         username: 'The Media Bot'
@@ -194,7 +194,7 @@ app.post('/slack/reaction', function (req, res, next) {
           var text = req.body.event.text;
           var reporterDm = req.body.event.channel;
 
-          sendconfirmationMessage(text, reporterDm);
+          sendConfirmationMessage(text, reporterDm);
         }
       }
 
