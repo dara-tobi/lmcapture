@@ -184,6 +184,7 @@ app.get('/slack/auth', function (req, res) {
 });
 
 app.post('/slack/reaction', function (req, res, next) {
+  log(req.body);
   if (req.body.event.type === 'message') {
     if (req.body.event.text) {
       if (req.body.event.user) {
