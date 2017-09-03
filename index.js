@@ -98,7 +98,7 @@ function findDirectMessageId(text, reporter, owner)
   request.post({
       url: 'https://slack.com/api/im.open',
       form: {
-        token: process.env.TOKEN,
+        token: process.env.BOT_TOKEN,
         user: reporter
       }
     },
