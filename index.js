@@ -116,7 +116,7 @@ function sendDirectMessage(text, reporter, owner = null, reporterDm)
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
       form: {
-        token: process.env.TOKEN,
+        token: process.env.BOT_TOKEN,
         text: 'Hi <@' + reporter + '>, you marked the resource `'+ text +'` as recommendable. What audience would you recommend the resource to?',
         channel: reporterDm,
         username: 'The Media Bot'
