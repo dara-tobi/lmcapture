@@ -129,7 +129,7 @@ function sendDirectMessage(text, reporter, owner = null, reporterDm)
     });
 }
 
-funcCion sendconfirmationMessage(text, reporterDm) 
+function sendConfirmationMessage(text, reporterDm) 
 {
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
