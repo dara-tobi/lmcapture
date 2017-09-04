@@ -77,8 +77,13 @@ function findDirectMessageId(text, reporter, owner)
     function (err, httpResponse, body) {
       var body = JSON.parse(body);
       var reporterDm = body.channel.id;
+      var url = getResourceLink(text);
 
-      sendDirectMessage(reporterDm, 'Hi <@' + reporter + '>, you marked the resource `'+ text +'` as recommendable. What audience would you recommend the resource to?');
+      if (url) {
+        sendDirectMessage(reporterDm, 'Hi <@' + reporter + '>, you marked the resource `'+ url +'` as recommendable. What audience would you recommend the resource to?');
+      } else {
+        sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend");
+      }
     });
 }
 
@@ -111,30 +116,39 @@ function getFourLatestMessages(reporterDm) {
     },
     function(err, httpResponse, body){
       var body = JSON.parse(body);
-      
+
       if (body.ok) {
         var messages = body.messages;
-        
+
         if (messages.length === 4) {
           if (messages[1].subtype && messages[1].subtype === 'bot_message' && messages[3].subtype && messages[3].subtype === 'bot_message') {
-            
+
             var audience = messages[2].text;
-            var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
-            var regex = new RegExp(expression);
-            var t = messages[3].text;
-            var url = t.match(regex);
-            
+            var url = getResourceLink(messages[3].text);
+
             if (url) {
-              url = url[0];
               postMessageToChannel("*Resource:* " + url + " \n *Audience:* `" + audience + "`");
             }
           }
         }
       }
+
       if (err) {
         log('error ', err);
       }
     });
+}
+
+function getResourceLink(text) {
+  var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+  var regex = new RegExp(expression);
+  var url = text.match(regex);
+
+  if (url) {
+    return url[0];
+  }
+
+  return null;
 }
 
 function getTwoLatestMessages(reporterDm) {
@@ -165,7 +179,7 @@ function getTwoLatestMessages(reporterDm) {
               url = url[0];
               sendDirectMessage(reporterDm, 'I\'m going to tag this article with *Recommended Audience:* `' + text + '`. Is that okay?');
             } else {
-              sendDirectMessage(reporterDm, "Sorry, I could't find the resource you're trying to recommend");
+              sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend");
             }
           }
         }
