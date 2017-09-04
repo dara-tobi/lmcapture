@@ -128,7 +128,11 @@ function getFourLatestMessages(reporterDm) {
 
             if (url) {
               postMessageToChannel("*Resource:* " + url + " \n *Audience:* `" + audience + "`");
+            } else {
+              sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend");
             }
+          } else {
+            sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend");
           }
         }
       }
