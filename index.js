@@ -164,6 +164,7 @@ function getTwoLatestMessages(reporterDm) {
       var body = JSON.parse(body);
       
       if (body.ok) {
+        log('got a message, checking for url in last two messages');
         var messages = body.messages;
         
         if (messages.length === 2) {
@@ -179,6 +180,7 @@ function getTwoLatestMessages(reporterDm) {
               url = url[0];
               sendDirectMessage(reporterDm, 'I\'m going to tag this article with *Recommended Audience:* `' + text + '`. Is that okay?');
             } else {
+              log('no url found in last two messages, notifying reporter');
               sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend");
             }
           }
