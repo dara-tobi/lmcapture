@@ -119,6 +119,42 @@ function sendConfirmationMessage(text, reporterDm)
     });
 }
 
+function getFourLatestMessages(reporterDm) {
+  request.post({
+      url: 'https://slack.com/api/im.history',
+      form: {
+        token: process.env.BOT_TOKEN,
+        channel: reporterDm,
+        count: 4
+      }
+    },
+    function(err, httpResponse, body){
+      var body = JSON.parse(body);
+      
+      if (body.ok) {
+        var messages = body.messages;
+        
+        if (messages.length === 4) {
+          if (messages[1].subtype && messages[1].subtype === 'bot_message' && messages[3].subtype && messages[3].subtype === 'bot_message') {
+            
+            var audience = messages[2].text;
+            var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+            var regex = new RegExp(expression);
+            var t = messages[3].text;
+            var url = t.match(regex);
+            
+            if (url) {
+              url = url[0];
+              postMessageToChannel("*Resource:* " + url + " \n *Audience:* `" + audience + "`");
+            }
+          }
+        }
+      }
+      if (err) {
+        log('error ', err);
+      }
+    });
+}
 
 app.get('/', function (req, res) {
    res.send('hello world');
@@ -157,7 +193,7 @@ app.post('/slack/reaction', function (req, res, next) {
     if (req.body.event.text) {
       if (req.body.event.user) {
         if (req.body.event.text.toLowerCase() == 'yes') {
-          postMessageToChannel("*Resource:* https://medium.com/@phabbs/dont-suck-at-design-b506abd99f2 \n *Audience:* `Junior devs`");
+          getFourLatestMessages(req.body.event.channel);
         } else {
           var text = req.body.event.text;
           var reporterDm = req.body.event.channel;
