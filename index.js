@@ -78,36 +78,17 @@ function findDirectMessageId(text, reporter, owner)
       var body = JSON.parse(body);
       var reporterDm = body.channel.id;
 
-      sendDirectMessage(text, reporter, owner, reporterDm);
+      sendDirectMessage(reporterDm, 'Hi <@' + reporter + '>, you marked the resource `'+ text +'` as recommendable. What audience would you recommend the resource to?');
     });
 }
 
-function sendDirectMessage(text, reporter, owner = null, reporterDm) 
-{
-  log('text: ', text, 'reporter ', reporter, 'owner ', owner, 'reporterDm ', reporterDm);
-  request.post({
-      url: 'https://slack.com/api/chat.postMessage',
-      form: {
-        token: process.env.BOT_TOKEN,
-        text: 'Hi <@' + reporter + '>, you marked the resource `'+ text +'` as recommendable. What audience would you recommend the resource to?',
-        channel: reporterDm,
-        username: 'The Media Bot'
-      }
-    },
-    function(err, httpResponse, body){
-      if (err) {
-        log('error ', err);
-      }
-    });
-}
-
-function sendConfirmationMessage(text, reporterDm) 
+function sendDirectMessage(reporterDm, text) 
 {
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
       form: {
         token: process.env.BOT_TOKEN,
-        text: 'I\'m going to tag this article with *Recommended Audience:* `' + text + '`. Is that okay?',
+        text: text,
         channel: reporterDm,
         username: 'The Media Bot'
       }
@@ -156,6 +137,45 @@ function getFourLatestMessages(reporterDm) {
     });
 }
 
+function getTwoLatestMessages(reporterDm) {
+  request.post({
+      url: 'https://slack.com/api/im.history',
+      form: {
+        token: process.env.BOT_TOKEN,
+        channel: reporterDm,
+        count: 2
+      }
+    },
+    function(err, httpResponse, body){
+      var body = JSON.parse(body);
+      
+      if (body.ok) {
+        var messages = body.messages;
+        
+        if (messages.length === 2) {
+          if (messages[1].subtype && messages[1].subtype === 'bot_message') {
+            
+            var text = messages[0].text;
+            var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+            var regex = new RegExp(expression);
+            var t = messages[1].text;
+            var url = t.match(regex);
+            
+            if (url) {
+              url = url[0];
+              sendDirectMessage(reporterDm, 'I\'m going to tag this article with *Recommended Audience:* `' + text + '`. Is that okay?');
+            } else {
+              sendDirectMessage(reporterDm, "Sorry, I could't find the resource you're trying to recommend");
+            }
+          }
+        }
+      }
+      if (err) {
+        log('error ', err);
+      }
+    });
+}
+
 app.get('/', function (req, res) {
    res.send('hello world');
 });
@@ -193,12 +213,11 @@ app.post('/slack/reaction', function (req, res, next) {
     if (req.body.event.text) {
       if (req.body.event.user) {
         if (req.body.event.text.toLowerCase() == 'yes') {
+          // get last four messages, in order to retrieve resource and audience to be posted
           getFourLatestMessages(req.body.event.channel);
         } else {
-          var text = req.body.event.text;
-          var reporterDm = req.body.event.channel;
-
-          sendConfirmationMessage(text, reporterDm);
+          // get last two messages, in order to confirm that the user is actually recommending something
+          getTwoLatestMessages(req.body.event.channel);
         }
       }
     }
