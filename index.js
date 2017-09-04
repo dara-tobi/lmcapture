@@ -178,6 +178,8 @@ function getTwoLatestMessages(reporterDm) {
             if (url) {
               url = url[0];
               sendDirectMessage(reporterDm, 'I\'m going to tag this article with *Recommended Audience:* `' + text + '`. Is that okay?');
+            } else {
+              sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend");
             }
           } else {
             sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend");
