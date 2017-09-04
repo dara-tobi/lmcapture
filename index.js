@@ -235,6 +235,8 @@ app.post('/slack/reaction', function (req, res, next) {
         if (req.body.event.text.toLowerCase() == 'yes') {
           // get last four messages, in order to retrieve resource and audience to be posted
           getFourLatestMessages(req.body.event.channel);
+        } else if (req.body.event.text.toLowerCase() === 'no') {
+          sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation');
         } else {
           // get last two messages, in order to confirm that the user is actually recommending something
           getTwoLatestMessages(req.body.event.channel);
