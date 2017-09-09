@@ -224,8 +224,9 @@ app.get('/slack/access', function (req, res) {
       }
       body = JSON.parse(body);
       log('body should contain token:', body);
-    });
 
+    });
+  res.status(200).send('OK');
 });
 
 app.post('/slack/access', function (req, res) {
