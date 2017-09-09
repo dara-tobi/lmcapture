@@ -206,16 +206,15 @@ app.post('/slack/auth', function(req, res){
   log('bot token: ', req.body.bot.bot_access_token);
 });
 
-app.get('/slack/access', function (req, res) {
-  log('received get... body:', req.body);
+app.get('/slack/auth', function (req, res) {
+  // log('received get... body:', req.body);
   log('received code... code:', req.query.code);
   request.post({
       url: 'https://slack.com/api/oauth.access',
       form: {
         code: req.query.code,
         client_id: '65743207921.231877010403',
-        client_secret: process.env.client_secret,
-        redirect_uri: 'https://lmedia.herokuapp.com/slack/access'
+        client_secret: process.env.client_secret
       }
     },
     function(err, httpResponse, body){
@@ -224,22 +223,22 @@ app.get('/slack/access', function (req, res) {
       }
       body = JSON.parse(body);
       log('body should contain token:', body);
-
+      res.status(200).send('OK');
     });
-  res.status(200).send('OK');
+    res.send('Slack app has been installed, you may now return to slack :)');
 });
 
-app.post('/slack/access', function (req, res) {
-  log('received post... body:', req.body);
-});
+// app.post('/slack/access', function (req, res) {
+//   log('received post... body:', req.body);
+// });
 
-app.get('/slack/auth', function (req, res) {
-  log('receiving code');
-  log('query', req.query.code);
-  log('body', req.body);
-  res.redirect('https://slack.com/oauth/authorize?&client_id=65743207921.231877010403&scope=reactions:read,chat:write:bot,incoming-webhook,emoji:read,channels:history,im:history,im:read,im:write,bot&redirect_uri=https://lmedia.herokuapp.com/slack/access');
+// app.get('/slack/auth', function (req, res) {
+//   log('receiving code');
+//   log('query', req.query.code);
 
-});
+//   res.redirect('https://slack.com/oauth/authorize?&client_id=65743207921.231877010403&scope=reactions:read,chat:write:bot,incoming-webhook,emoji:read,channels:history,im:history,im:read,im:write,bot&redirect_uri=https://lmedia.herokuapp.com/slack/access');
+
+// });
 
 app.post('/slack/reaction', function (req, res, next) {
   log(req.body);
