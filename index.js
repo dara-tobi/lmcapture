@@ -206,6 +206,14 @@ app.post('/slack/auth', function(req, res){
   log('bot token: ', req.body.bot.bot_access_token);
 });
 
+app.get('/slack/access', function (req, res) {
+  log('received get... body:', req.body);
+});
+
+app.post('/slack/access', function (req, res) {
+  log('received post... body:', req.body);
+});
+
 app.get('/slack/auth', function (req, res) {
   log('receiving code');
   log(req.query.code);
@@ -216,7 +224,7 @@ app.get('/slack/auth', function (req, res) {
         code: req.query.code,
         client_id: '65743207921.231877010403',
         client_secret: process.env.client_secret,
-        redirect_uri: 'https://lmedia.herokuapp.com/slack/auth'
+        redirect_uri: 'https://lmedia.herokuapp.com/slack/access'
       }
     },
     function(err, httpResponse, body){
