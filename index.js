@@ -218,7 +218,7 @@ app.get('/slack/auth', function (req, res) {
   log('receiving code');
   log('query', req.query.code);
   log('body', req.body);
-  res.redirect('https://slack.com/oauth/authorize?&client_id=65743207921.231877010403&scope=reactions:read,chat:write:bot,incoming-webhook,emoji:read,channels:history,im:history,im:read,im:write,bot,redirect_uri=https://lmedia.herokuapp.com/slack/access');
+  res.redirect('https://slack.com/oauth/authorize?&client_id=65743207921.231877010403&scope=reactions:read,chat:write:bot,incoming-webhook,emoji:read,channels:history,im:history,im:read,im:write,bot&redirect_uri=https://lmedia.herokuapp.com/slack/access');
   // request.post({
   //     url: 'https://slack.com/api/oauth.access',
   //     form: {
