@@ -223,9 +223,8 @@ app.get('/slack/auth', function (req, res) {
       }
       body = JSON.parse(body);
       log('body should contain token:', body);
-      res.status(200).send('OK');
+      res.status(200).send('Slack app has been installed, you may now return to slack :)');
     });
-    res.send('Slack app has been installed, you may now return to slack :)');
 });
 
 // app.post('/slack/access', function (req, res) {
