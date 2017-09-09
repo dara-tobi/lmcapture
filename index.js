@@ -250,12 +250,16 @@ app.post('/slack/reaction', function (req, res, next) {
       getMessage(req.body.event);
     }
   }
+
+  if (req.body.event) {
+    res.status(200).send('OK');
+  }
   
   if (req.body.challenge) {
     res.send(req.body.challenge);
-  } else {
-    res.status(200).send('OK');
   }
+
+  log('request body', req.body);
 });
 
 app.listen(process.env.PORT || 8000);
