@@ -240,15 +240,15 @@ function getTwoLatestMessages(reporterDm, bot_token) {
 function sendConfirmationMessage(reporterDm, text, bot_token) {
   var attachments = null;
 
-  if (text.text) {
-    var text = text.text;
-  }
-
   if (text.attachments) {
     attachments = JSON.stringify(text.attachments);
     log('attachments payload', attachments);
   } else {
     log('no attachments found');
+  }
+
+  if (text.text) {
+    var text = text.text;
   }
 
   request.post({
