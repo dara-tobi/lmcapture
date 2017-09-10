@@ -49,6 +49,7 @@ function getMessage(event, user_token, bot_token)
 
 function postMessageToChannel(text, bot_token, channel_id)
 {
+  log('posting message to channel');
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
       form: {
@@ -61,6 +62,8 @@ function postMessageToChannel(text, bot_token, channel_id)
     function(err, httpResponse, body){
       if (err) {
         log('error ', err);
+      } else {
+        log('effect of post to channel', body);
       }
     });
 
@@ -91,7 +94,7 @@ function findDirectMessageId(text, reporter, owner, bot_token)
 function sendDirectMessage(reporterDm, text, bot_token)
 {
   var attachments = null;
-
+  log('sending direct message');
   if (text.text) {
     var text = text.text;
   }
@@ -114,6 +117,8 @@ function sendDirectMessage(reporterDm, text, bot_token)
     function(err, httpResponse, body){
       if (err) {
         log('error ', err);
+      } else {
+        log('effect of direct message', body);
       }
     });
 }
