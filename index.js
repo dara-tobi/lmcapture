@@ -370,7 +370,7 @@ app.post('/slack/reaction', function (req, res, next) {
   }
 
   if (req.body.payload) {
-    var payload = req.body.payload;
+    var payload = JSON.parse(req.body.payload);
     log('payload', payload);
     log('actions', payload.actions);
     log('typeof payload', typeof payload);
