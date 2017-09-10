@@ -245,7 +245,7 @@ function sendConfirmationMessage(reporterDm, text, bot_token) {
   }
 
   if (text.attachments) {
-    attachments = text.attachments;
+    attachments = JSON.stringify(text.attachments);
     log('attachments payload', attachments);
   } else {
     log('no attachments found');
