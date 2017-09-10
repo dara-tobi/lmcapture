@@ -24,17 +24,18 @@ function getOrCreateTokensTable () {
   }
 }
 
-function addTokens (team_id, user_token, bot_token) {
+function addTokens (team_id, user_token, bot_token, channel_id) {
   if (getTokens(team_id)) {
     log("updating tokens");
     updateTokens(team_id, user_token, bot_token);
   } else {
     log("inserting tokens");
-    var insert = db.prepare("insert into tokens values ($team_id, $user_token, $bot_token)");
+    var insert = db.prepare("insert into tokens values ($team_id, $user_token, $bot_token, $channel_id)");
     insert.run({
       team_id: team_id,
       user_token: user_token,
-      bot_token: bot_token  
+      bot_token: bot_token  ,
+      channel_id: channel_id
     });
   }
 }
@@ -54,6 +55,7 @@ function getAllTokens () {
    var getAll = db.prepare("select * from tokens");
    return getAll.all();
 }
+
 
 module.exports = {
   addTokens: addTokens,
