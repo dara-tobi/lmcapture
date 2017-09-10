@@ -8,7 +8,7 @@ var db = require('./db');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-function getMessage(event)
+function getMessage(event, user_token, bot_token)
 {
   var item = event.item;
   var latest = item.ts;
@@ -16,7 +16,7 @@ function getMessage(event)
   request.post({
       url: 'https://slack.com/api/channels.history',
       form: {
-        'token': process.env.TOKEN,
+        'token': user_token,
         'channel': item.channel,
         'latest': latest,
         'inclusive': true,
@@ -41,20 +41,20 @@ function getMessage(event)
           log('reporter: ', reporter);
           var owner = message.user;
 
-          findDirectMessageId(text, reporter, owner);
+          findDirectMessageId(text, reporter, owner, bot_token);
         }
       }
     });
 }
 
-function postMessageToChannel(text)
+function postMessageToChannel(text, bot_token)
 {
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
       form: {
-        token: process.env.BOT_TOKEN,
+        token: bot_token,
         text: text,
-        channel: '#lkgt',
+        channel: channel_id,
         username: 'The Media Bot'
       }
     },
@@ -66,12 +66,12 @@ function postMessageToChannel(text)
 
 }
 
-function findDirectMessageId(text, reporter, owner)
+function findDirectMessageId(text, reporter, owner, bot_token)
 {
   request.post({
       url: 'https://slack.com/api/im.open',
       form: {
-        token: process.env.BOT_TOKEN,
+        token: bot_token,
         user: reporter
       }
     },
@@ -81,19 +81,19 @@ function findDirectMessageId(text, reporter, owner)
       var url = getResourceLink(text);
 
       if (url) {
-        sendDirectMessage(reporterDm, 'Hi <@' + reporter + '>, you marked the resource `'+ url +'` as recommendable. What audience would you recommend the resource to?');
+        sendDirectMessage(reporterDm, 'Hi <@' + reporter + '>, you marked the resource `'+ url +'` as recommendable. What audience would you recommend the resource to?', bot_token);
       } else {
-        sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend");
+        sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend", bot_token);
       }
     });
 }
 
-function sendDirectMessage(reporterDm, text) 
+function sendDirectMessage(reporterDm, text, bot_token)
 {
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
       form: {
-        token: process.env.BOT_TOKEN,
+        token: bot_token,
         text: text,
         channel: reporterDm,
         username: 'The Media Bot'
@@ -106,11 +106,11 @@ function sendDirectMessage(reporterDm, text)
     });
 }
 
-function getFourLatestMessages(reporterDm) {
+function getFourLatestMessages(reporterDm, bot_token, channel_id) {
   request.post({
       url: 'https://slack.com/api/im.history',
       form: {
-        token: process.env.BOT_TOKEN,
+        token: bot_token,
         channel: reporterDm,
         count: 4
       }
@@ -128,12 +128,12 @@ function getFourLatestMessages(reporterDm) {
             var url = getResourceLink(messages[3].text);
 
             if (url) {
-              postMessageToChannel("*Resource:* " + url + " \n *Audience:* `" + audience + "`");
+              postMessageToChannel("*Resource:* " + url + " \n *Audience:* `" + audience + "`", bot_token, channel_id);
             } else {
-              sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend");
+              sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend", bot_token);
             }
           } else {
-            sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend");
+            sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend", bot_token);
           }
         }
       }
@@ -156,11 +156,11 @@ function getResourceLink(text) {
   return null;
 }
 
-function getTwoLatestMessages(reporterDm) {
+function getTwoLatestMessages(reporterDm, bot_token) {
   request.post({
       url: 'https://slack.com/api/im.history',
       form: {
-        token: process.env.BOT_TOKEN,
+        token: bot_token,
         channel: reporterDm,
         count: 2
       }
@@ -182,12 +182,12 @@ function getTwoLatestMessages(reporterDm) {
             
             if (url) {
               url = url[0];
-              sendDirectMessage(reporterDm, 'I\'m going to tag this article with *Recommended Audience:* `' + text + '`. Is that okay?');
+              sendDirectMessage(reporterDm, 'I\'m going to tag this article with *Recommended Audience:* `' + text + '`. Is that okay?', bot_token);
             } else {
-              sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend");
+              sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend", bot_token);
             }
           } else {
-            sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend");
+            sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend", bot_token);
           }
         }
       }
@@ -222,8 +222,17 @@ app.get('/slack/auth', function (req, res) {
       if (err) {
         log('error ', err);
       }
+
       body = JSON.parse(body);
       log('body should contain token:', body);
+
+      user_token = body.access_token;
+      bot_token = body.bot.bot_access_token;
+      teamId = body.team_id;
+      channel = body.incoming_webhook.channel_id;
+
+      db.addTokens(teamId, user_token, bot_token, channel_id);
+
       res.status(200).send('Slack app has been installed, you may now return to slack :)');
     });
 });
@@ -241,18 +250,23 @@ app.get('/slack/auth', function (req, res) {
 // });
 
 app.post('/slack/reaction', function (req, res, next) {
+  var tokens = db.getTokens(event.team_id);
+  var user_token = tokens.user_token;
+  var bot_token = tokens.bot_token;
+  var channel_id = tokens, channel_id;
+
   log(req.body);
   if (req.body.event.type === 'message') {
     if (req.body.event.text) {
       if (req.body.event.user) {
         if (req.body.event.text.toLowerCase() == 'yes') {
           // get last four messages, in order to retrieve resource and audience to be posted
-          getFourLatestMessages(req.body.event.channel);
+          getFourLatestMessages(req.body.event.channel, bot_token, channel_id);
         } else if (req.body.event.text.toLowerCase() === 'no') {
-          sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation');
+          sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation', bot_token);
         } else {
           // get last two messages, in order to confirm that the user is actually recommending something
-          getTwoLatestMessages(req.body.event.channel);
+          getTwoLatestMessages(req.body.event.channel, bot_token);
         }
       }
     }
@@ -260,7 +274,7 @@ app.post('/slack/reaction', function (req, res, next) {
 
   if (req.body.event.reaction) {
     if (req.body.event.reaction === 'grinning') {
-      getMessage(req.body.event);
+      getMessage(req.body.event, user_token, bot_token);
     }
   }
 
