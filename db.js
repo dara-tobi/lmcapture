@@ -38,7 +38,7 @@ function addTokens (team_id, user_token, bot_token, channel_id) {
       channel_id: channel_id
     };
     log('adding tokens', details);
-    insert.run();
+    insert.run(details);
     log('getting tokens', getTokens(team_id));
   }
 }
