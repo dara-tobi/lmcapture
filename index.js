@@ -251,8 +251,8 @@ app.get('/slack/auth', function (req, res) {
 
 app.post('/slack/reaction', function (req, res, next) {
   if (req.body.event) {
-    log('team id received, ', req.body.event.team_id, 'sending team id along for token retrieval');
-    var tokens = db.getTokens(req.body.event.team_id);
+    log('team id received, ', req.body.team_id, 'sending team id along for token retrieval');
+    var tokens = db.getTokens(req.body.team_id);
     if (tokens) {
       var user_token = tokens.user_token;
       var bot_token = tokens.bot_token;
