@@ -134,10 +134,10 @@ function getFourLatestMessages(reporterDm, bot_token, channel_id) {
         var messages = body.messages;
 
         if (messages.length === 4) {
-          if (messages[1].subtype && messages[1].subtype === 'bot_message' && messages[3].subtype && messages[3].subtype === 'bot_message') {
+          if (messages[0].subtype && messages[0].subtype === 'bot_message' && messages[2].subtype && messages[2].subtype === 'bot_message') {
 
-            var audience = messages[2].text;
-            var url = getResourceLink(messages[3].text);
+            var audience = messages[1].text;
+            var url = getResourceLink(messages[2].text);
 
             if (url) {
               postMessageToChannel("*Resource:* " + url + " \n *Audience:* `" + audience + "`", bot_token, channel_id);
@@ -207,7 +207,7 @@ function getTwoLatestMessages(reporterDm, bot_token) {
                                   "name": "yes",
                                   "text": "Yes, go ahead",
                                   "type": "button",
-                                  "value": "no",
+                                  "value": "yes",
                                   "style": "primary"
                               },
                               {
@@ -370,11 +370,18 @@ app.post('/slack/reaction', function (req, res, next) {
   }
 
   if (req.body.payload) {
-    log('received payload response after user action', req.body);
+    payload = req.body.payload;
+    var action = payload.actions[0].name;
+    if (action === 'yes') {
+      sendDirectMessage(payload.channel.id, 'Recommendation sent; thank you!', bot_token);
+      getFourLatestMessages(payload.channel.id, bot_token, channel_id);
+    } else {
+      sendDirectMessage(payload.channel.id, 'Okay, cancelling.', bot_token);
+    }
   }
 
   if (req.body.event || req.body.payload) {
-    res.status(200).send('OK');
+    res.status(200).end();
   }
 
   if (req.body.challenge) {
