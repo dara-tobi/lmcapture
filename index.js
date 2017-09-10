@@ -327,15 +327,20 @@ app.post('/slack/reaction', function (req, res, next) {
   log('request body', req.body);
   if (req.body.event) {
     log('team id received, ', req.body.team_id, 'sending team id along for token retrieval');
-    var tokens = db.getTokens(req.body.team_id);
-    if (tokens) {
-      var user_token = process.env.test_user;
-      var bot_token = process.env.test_bot;
-      var channel_id = tokens.channel_id;
-      log(tokens);
-    } else {
-      log('no tokens set');
-    }
+    // var tokens = db.getTokens(req.body.team_id);
+    // if (tokens) {
+    //   var user_token = tokens.user_token;
+    //   var bot_token = tokens.bot_token;
+    //   var channel_id = tokens.channel_id;
+    //   log(tokens);
+    // } else {
+    //   log('no tokens set');
+    // }
+
+    var user_token = process.env.test_user;
+    var bot_token = process.env.test_bot;
+    var channel_id = 'C6X8YFWE5';
+
     if (req.body.event.type === 'message') {
       if (req.body.event.text) {
         if (req.body.event.user) {
