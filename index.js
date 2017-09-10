@@ -237,8 +237,7 @@ function getTwoLatestMessages(reporterDm, bot_token) {
     });
 }
 
-function sendConfirmationMessage(reporterDm, text, bot_token)
-{
+function sendConfirmationMessage(reporterDm, text, bot_token) {
   var attachments = null;
 
   if (text.text) {
@@ -246,8 +245,10 @@ function sendConfirmationMessage(reporterDm, text, bot_token)
   }
 
   if (text.attachments) {
-    var attachments = JSON.stringify(text.attachments);
+    attachments = text.attachments;
     log('attachments payload', attachments);
+  } else {
+    log('no attachments found');
   }
 
   request.post({
