@@ -2,8 +2,6 @@ var Database = require('better-sqlite3');
 var db = new Database('lmedia.db');
 var log = console.log;
 
-
- 
 function deleteTokens (team_id) {
   log("deleting token");
   var deleteRow = db.prepare("delete from tokens where team_id='" + team_id + "'");
@@ -67,6 +65,12 @@ function refreshTokensTable () {
   deleteTable();
   getOrCreateTokensTable();
 }
+
+function saveResauceDevCreds () {
+  addTokens('T04SM6T1Z', 'xoxp-4905231067-232420551172-238913757988-7a3e8ac411c8097b2fbb51012c25353a', 'xoxb-238867149780-jIEeA9R6TbGnA3aQcjv5Xw8B', 'C6X8YFWE5');
+}
+
+saveResauceDevCreds();
 
 module.exports = {
   addTokens: addTokens,
