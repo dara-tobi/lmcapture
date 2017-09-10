@@ -9,6 +9,7 @@ function deleteTokens (team_id) {
 }
 
 function deleteTable () {
+  log("deleting tokens table");
   var deleteTable = db.prepare("drop table tokens");
   deleteTable.run();
 }
@@ -18,7 +19,7 @@ function getOrCreateTokensTable () {
 
   if (!tables.get()) {
     log('creating tokens table');
-    var query = db.prepare("create table tokens (team_id VARCHAR (25), user_token VARCHAR (255), bot_token VARCHAR (255))");
+    var query = db.prepare("create table tokens (team_id VARCHAR (25), user_token VARCHAR (255), bot_token VARCHAR (255), channel_id VARCHAR(15))");
     query.run();
   }
 }
