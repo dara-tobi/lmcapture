@@ -375,6 +375,9 @@ app.post('/slack/reaction', function (req, res, next) {
   }
 
   if (req.body.payload) {
+    var user_token = process.env.test_user;
+    var bot_token = process.env.test_bot;
+    var channel_id = 'C6X8YFWE5';
     var payload = JSON.parse(req.body.payload);
     log('payload', payload);
     log('actions', payload.actions);
