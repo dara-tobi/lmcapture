@@ -90,11 +90,22 @@ function findDirectMessageId(text, reporter, owner, bot_token)
 
 function sendDirectMessage(reporterDm, text, bot_token)
 {
+  var attachments = null;
+
+  if (text.text) {
+    var text = text.text;
+  }
+
+  if (text.attachments) {
+    var attachments = text.attachments;
+  }
+
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
       form: {
         token: bot_token,
         text: text,
+        attachments: attachments,
         channel: reporterDm,
         username: 'Learning Media Bot'
       }
