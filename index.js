@@ -246,22 +246,19 @@ function sendConfirmationMessage(reporterDm, text, bot_token)
   }
 
   if (text.attachments) {
-    var attachments = text.attachments;
+    var attachments = JSON.stringify(text.attachments);
     log('attachments payload', attachments);
   }
 
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
       form: {
+        text: text,
+        attachments: attachments;
         token: bot_token,
         channel: reporterDm,
         username: 'Learning Media Bot'
-      },
-      body: {
-        text: text,
-        attachments: attachments,
-      },
-      json: true
+      }
     },
     function(err, httpResponse, body){
       console.log('received body right after sending request', body);
