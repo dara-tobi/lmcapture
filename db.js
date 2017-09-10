@@ -63,8 +63,10 @@ function getAllTokens () {
    return getAll.all();
 }
 
-deleteTable();
-getOrCreateTokensTable();
+function refreshTokensTable () {
+  deleteTable();
+  getOrCreateTokensTable();
+}
 
 module.exports = {
   addTokens: addTokens,
