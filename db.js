@@ -1,6 +1,8 @@
 var Database = require('better-sqlite3');
 var db = new Database('lmedia.db');
 var log = console.log;
+
+
  
 function deleteTokens (team_id) {
   log("deleting token");
@@ -27,7 +29,7 @@ function getOrCreateTokensTable () {
 function addTokens (team_id, user_token, bot_token, channel_id) {
   if (getTokens(team_id)) {
     log("updating tokens");
-    updateTokens(team_id, user_token, bot_token);
+    updateTokens(team_id, user_token, bot_token, channel_id);
   } else {
     log("inserting tokens");
     var insert = db.prepare("insert into tokens values ($team_id, $user_token, $bot_token, $channel_id)");
@@ -44,8 +46,10 @@ function addTokens (team_id, user_token, bot_token, channel_id) {
 }
 
 function getTokens (team_id) {
+  log("getting tokens for team", team_id);
   var row = db.prepare("SELECT * FROM tokens where team_id='" + team_id + "'");
   var result = row.get();
+  log('result', result);
   return result;
 }
 
@@ -59,6 +63,8 @@ function getAllTokens () {
    return getAll.all();
 }
 
+deleteTable();
+getOrCreateTokensTable();
 
 module.exports = {
   addTokens: addTokens,
