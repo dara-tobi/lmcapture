@@ -252,23 +252,26 @@ app.get('/slack/auth', function (req, res) {
 app.post('/slack/reaction', function (req, res, next) {
   if (req.body.event) {
     var tokens = db.getTokens(req.body.event.team_id);
-    var user_token = tokens.user_token;
-    var bot_token = tokens.bot_token;
-    var channel_id = tokens.channel_id;
+    if (tokens) {
+      var user_token = tokens.user_token;
+      var bot_token = tokens.bot_token;
+      var channel_id = tokens.channel_id;
+    }
   }
 
-  log(req.body);
   if (req.body.event.type === 'message') {
     if (req.body.event.text) {
       if (req.body.event.user) {
-        if (req.body.event.text.toLowerCase() == 'yes') {
-          // get last four messages, in order to retrieve resource and audience to be posted
-          getFourLatestMessages(req.body.event.channel, bot_token, channel_id);
-        } else if (req.body.event.text.toLowerCase() === 'no') {
-          sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation', bot_token);
-        } else {
-          // get last two messages, in order to confirm that the user is actually recommending something
-          getTwoLatestMessages(req.body.event.channel, bot_token);
+        if (bot_token) {
+          if (req.body.event.text.toLowerCase() == 'yes') {
+            // get last four messages, in order to retrieve resource and audience to be posted
+            getFourLatestMessages(req.body.event.channel, bot_token, channel_id);
+          } else if (req.body.event.text.toLowerCase() === 'no') {
+            sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation', bot_token);
+          } else {
+            // get last two messages, in order to confirm that the user is actually recommending something
+            getTwoLatestMessages(req.body.event.channel, bot_token);
+          }
         }
       }
     }
@@ -276,7 +279,9 @@ app.post('/slack/reaction', function (req, res, next) {
 
   if (req.body.event.reaction) {
     if (req.body.event.reaction === 'grinning') {
-      getMessage(req.body.event, user_token, bot_token);
+      if (user_token) {
+        getMessage(req.body.event, user_token, bot_token);
+      }
     }
   }
 
