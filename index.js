@@ -12,7 +12,7 @@ function getMessage(event, user_token, bot_token)
 {
   var item = event.item;
   var latest = item.ts;
-
+  log('finding message in channel');
   request.post({
       url: 'https://slack.com/api/channels.history',
       form: {
@@ -26,7 +26,7 @@ function getMessage(event, user_token, bot_token)
     function(err, httpResponse, body){ 
       var body = JSON.parse(body);
       var message = null;
-
+      log('found message in channel, finding reporter dm');
       if (body.ok) {
         for (var i = 0; i < body.messages.length; i++) {
           if (body.messages[i].user == event.item_user && body.messages[i].ts == item.ts) {
@@ -256,6 +256,9 @@ app.post('/slack/reaction', function (req, res, next) {
       var user_token = tokens.user_token;
       var bot_token = tokens.bot_token;
       var channel_id = tokens.channel_id;
+      log(tokens);
+    } else {
+      log('no tokens set');
     }
   }
 
@@ -281,6 +284,8 @@ app.post('/slack/reaction', function (req, res, next) {
     if (req.body.event.reaction === 'grinning') {
       if (user_token) {
         getMessage(req.body.event, user_token, bot_token);
+      } else {
+        log('no user token set');
       }
     }
   }
