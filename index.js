@@ -214,8 +214,8 @@ app.get('/slack/auth', function (req, res) {
       url: 'https://slack.com/api/oauth.access',
       form: {
         code: req.query.code,
-        client_id: '65743207921.231877010403',
-        client_secret: process.env.client_secret
+        client_id: process.env.resauce_client_id,
+        client_secret: process.env.resauce_client_secret
       }
     },
     function(err, httpResponse, body){
@@ -293,7 +293,7 @@ app.post('/slack/reaction', function (req, res, next) {
   if (req.body.event) {
     res.status(200).send('OK');
   }
-  
+
   if (req.body.challenge) {
     res.send(req.body.challenge);
   }
