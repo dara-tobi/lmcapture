@@ -370,8 +370,9 @@ app.post('/slack/reaction', function (req, res, next) {
   }
 
   if (req.body.payload) {
-    var body = JSON.parse(body);
-    var payload = body.payload;
+    var payload = req.body.payload;
+    log('payload', payload);
+    log('actions', payload.actions);
     var action = payload.actions[0].name;
     if (action === 'yes') {
       sendDirectMessage(payload.channel.id, 'Recommendation sent; thank you!', bot_token);
