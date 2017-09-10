@@ -55,7 +55,7 @@ function postMessageToChannel(text, bot_token, channel_id)
         token: bot_token,
         text: text,
         channel: channel_id,
-        username: 'The Media Bot'
+        username: 'Learning Media Bot'
       }
     },
     function(err, httpResponse, body){
@@ -96,7 +96,7 @@ function sendDirectMessage(reporterDm, text, bot_token)
         token: bot_token,
         text: text,
         channel: reporterDm,
-        username: 'The Media Bot'
+        username: 'Learning Media Bot'
       }
     },
     function(err, httpResponse, body){
@@ -261,32 +261,31 @@ app.post('/slack/reaction', function (req, res, next) {
     } else {
       log('no tokens set');
     }
-  }
-
-  if (req.body.event.type === 'message') {
-    if (req.body.event.text) {
-      if (req.body.event.user) {
-        if (bot_token) {
-          if (req.body.event.text.toLowerCase() == 'yes') {
-            // get last four messages, in order to retrieve resource and audience to be posted
-            getFourLatestMessages(req.body.event.channel, bot_token, channel_id);
-          } else if (req.body.event.text.toLowerCase() === 'no') {
-            sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation', bot_token);
-          } else {
-            // get last two messages, in order to confirm that the user is actually recommending something
-            getTwoLatestMessages(req.body.event.channel, bot_token);
+    if (req.body.event.type === 'message') {
+      if (req.body.event.text) {
+        if (req.body.event.user) {
+          if (bot_token) {
+            if (req.body.event.text.toLowerCase() == 'yes') {
+              // get last four messages, in order to retrieve resource and audience to be posted
+              getFourLatestMessages(req.body.event.channel, bot_token, channel_id);
+            } else if (req.body.event.text.toLowerCase() === 'no') {
+              sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation', bot_token);
+            } else {
+              // get last two messages, in order to confirm that the user is actually recommending something
+              getTwoLatestMessages(req.body.event.channel, bot_token);
+            }
           }
         }
       }
     }
-  }
 
-  if (req.body.event.reaction) {
-    if (req.body.event.reaction === 'grinning') {
-      if (user_token) {
-        getMessage(req.body.event, user_token, bot_token);
-      } else {
-        log('no user token set');
+    if (req.body.event.reaction) {
+      if (req.body.event.reaction === 'grinning') {
+        if (user_token) {
+          getMessage(req.body.event, user_token, bot_token);
+        } else {
+          log('no user token set');
+        }
       }
     }
   }
