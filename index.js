@@ -98,6 +98,7 @@ function sendDirectMessage(reporterDm, text, bot_token)
 
   if (text.attachments) {
     var attachments = text.attachments;
+    log('attachments payload', attachments);
   }
 
   request.post({
@@ -221,7 +222,7 @@ function getTwoLatestMessages(reporterDm, bot_token) {
                   ]
               };
 
-              sendDirectMessage(reporterDm, confirmation, bot_token);
+              sendConfirmationMessage(reporterDm, confirmation, bot_token);
             } else {
               sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend", bot_token);
             }
@@ -230,6 +231,40 @@ function getTwoLatestMessages(reporterDm, bot_token) {
           }
         }
       }
+      if (err) {
+        log('error ', err);
+      }
+    });
+}
+
+function sendConfirmationMessage(reporterDm, text, bot_token)
+{
+  var attachments = null;
+
+  if (text.text) {
+    var text = text.text;
+  }
+
+  if (text.attachments) {
+    var attachments = text.attachments;
+    log('attachments payload', attachments);
+  }
+
+  request.post({
+      url: 'https://slack.com/api/chat.postMessage',
+      body: {
+        token: bot_token,
+        text: text,
+        attachments: attachments,
+        channel: reporterDm,
+        username: 'Learning Media Bot'
+      },
+      json: true
+    },
+    function(err, httpResponse, body){
+      var body = JSON.parse(body);
+      console.log('received body right after sending request', body);
+
       if (err) {
         log('error ', err);
       }
@@ -330,7 +365,11 @@ app.post('/slack/reaction', function (req, res, next) {
     }
   }
 
-  if (req.body.event) {
+  if (req.body.payload) {
+    log('received payload response after user action', req.body);
+  }
+
+  if (req.body.event || req.body.payload) {
     res.status(200).send('OK');
   }
 
