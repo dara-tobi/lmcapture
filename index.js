@@ -81,7 +81,7 @@ function findDirectMessageId(text, reporter, owner, bot_token)
       var url = getResourceLink(text);
 
       if (url) {
-        sendDirectMessage(reporterDm, 'Hi <@' + reporter + '>, you marked the resource `'+ url +'` as recommendable. What audience would you recommend the resource to?', bot_token);
+        sendDirectMessage(reporterDm, 'Hi <@' + reporter + '>, you marked the link `'+ url +'` as recommendable. What audience would you recommend the it to?', bot_token);
       } else {
         sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend", bot_token);
       }
@@ -182,7 +182,35 @@ function getTwoLatestMessages(reporterDm, bot_token) {
             
             if (url) {
               url = url[0];
-              sendDirectMessage(reporterDm, 'I\'m going to tag this article with *Recommended Audience:* `' + text + '`. Is that okay?', bot_token);
+              var confirmation = {
+                  "text": "I\'m going to tag this article with *Recommended Audience:* `" + text + "`. Is that okay?",
+                  "attachments": [
+                      {
+                          "fallback": "Sorry I can't process your recommendation right now",
+                          "callback_id": "confirm",
+                          "color": "#3AA3E3",
+                          "attachment_type": "default",
+                          "actions": [
+                              {
+                                  "name": "yes",
+                                  "text": "Yes, go ahead",
+                                  "type": "button",
+                                  "value": "no",
+                                  "style": "primary"
+                              },
+                              {
+                                  "name": "no",
+                                  "text": "No, cancel",
+                                  "style": "danger",
+                                  "type": "button",
+                                  "value": "no"
+                              }
+                          ]
+                      }
+                  ]
+              };
+
+              sendDirectMessage(reporterDm, confirmation, bot_token);
             } else {
               sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend", bot_token);
             }
@@ -250,6 +278,7 @@ app.get('/slack/auth', function (req, res) {
 // });
 
 app.post('/slack/reaction', function (req, res, next) {
+  log('request body', req.body);
   if (req.body.event) {
     log('team id received, ', req.body.team_id, 'sending team id along for token retrieval');
     var tokens = db.getTokens(req.body.team_id);
@@ -297,8 +326,6 @@ app.post('/slack/reaction', function (req, res, next) {
   if (req.body.challenge) {
     res.send(req.body.challenge);
   }
-
-  log('request body', req.body);
 });
 
 app.listen(process.env.PORT || 8000);
