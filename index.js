@@ -262,7 +262,6 @@ function sendConfirmationMessage(reporterDm, text, bot_token)
       json: true
     },
     function(err, httpResponse, body){
-      var body = JSON.parse(body);
       console.log('received body right after sending request', body);
 
       if (err) {
