@@ -223,13 +223,13 @@ app.get('/slack/auth', function (req, res) {
         log('error ', err);
       }
 
-      body = JSON.parse(body);
+      var body = JSON.parse(body);
       log('body should contain token:', body);
 
-      user_token = body.access_token;
-      bot_token = body.bot.bot_access_token;
-      teamId = body.team_id;
-      channel = body.incoming_webhook.channel_id;
+      var user_token = body.access_token;
+      var bot_token = body.bot.bot_access_token;
+      var teamId = body.team_id;
+      var channel_id = body.incoming_webhook.channel_id;
 
       db.addTokens(teamId, user_token, bot_token, channel_id);
 
