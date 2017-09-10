@@ -31,12 +31,15 @@ function addTokens (team_id, user_token, bot_token, channel_id) {
   } else {
     log("inserting tokens");
     var insert = db.prepare("insert into tokens values ($team_id, $user_token, $bot_token, $channel_id)");
-    insert.run({
+    var details = {
       team_id: team_id,
       user_token: user_token,
       bot_token: bot_token  ,
       channel_id: channel_id
-    });
+    };
+    log('adding tokens', details);
+    insert.run();
+    log('getting tokens', getTokens(team_id));
   }
 }
 

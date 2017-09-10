@@ -230,7 +230,7 @@ app.get('/slack/auth', function (req, res) {
       var bot_token = body.bot.bot_access_token;
       var teamId = body.team_id;
       var channel_id = body.incoming_webhook.channel_id;
-
+      log('auth accepted, sending details to be saved', teamId, user_token, bot_token, channel_id);
       db.addTokens(teamId, user_token, bot_token, channel_id);
 
       res.status(200).send('Slack app has been installed, you may now return to slack :)');
@@ -251,6 +251,7 @@ app.get('/slack/auth', function (req, res) {
 
 app.post('/slack/reaction', function (req, res, next) {
   if (req.body.event) {
+    log('team id received, ', req.body.event.team_id, 'sending team id along for token retrieval');
     var tokens = db.getTokens(req.body.event.team_id);
     if (tokens) {
       var user_token = tokens.user_token;
