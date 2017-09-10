@@ -47,7 +47,7 @@ function getMessage(event, user_token, bot_token)
     });
 }
 
-function postMessageToChannel(text, bot_token)
+function postMessageToChannel(text, bot_token, channel_id)
 {
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
