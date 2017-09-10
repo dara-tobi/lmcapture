@@ -384,10 +384,12 @@ app.post('/slack/reaction', function (req, res, next) {
     log('typeof payload', typeof payload);
     var action = payload.actions[0].name;
     if (action === 'yes') {
-      sendDirectMessage(payload.channel.id, 'Recommendation sent; thank you!', bot_token);
+            // sendDirectMessage(payload.channel.id, 'Recommendation sent; thank you!', bot_token);
       getFourLatestMessages(payload.channel.id, bot_token, channel_id);
+      res.send('recommend sent');
     } else {
-      sendDirectMessage(payload.channel.id, 'Okay, cancelling.', bot_token);
+      res.send('cancel');
+      // sendDirectMessage(payload.channel.id, 'Okay, cancelling.', bot_token);
     }
   }
 
