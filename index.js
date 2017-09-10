@@ -252,12 +252,14 @@ function sendConfirmationMessage(reporterDm, text, bot_token)
 
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
-      body: {
+      form: {
         token: bot_token,
-        text: text,
-        attachments: attachments,
         channel: reporterDm,
         username: 'Learning Media Bot'
+      },
+      body: {
+        text: text,
+        attachments: attachments,
       },
       json: true
     },
