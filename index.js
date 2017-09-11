@@ -369,7 +369,7 @@ app.post('/slack/reaction', function (req, res, next) {
     }
 
     if (req.body.event.reaction) {
-      if (req.body.event.reaction === 'grinning') {
+      if (req.body.event.reaction === 'resauce' || req.body.event.reaction === 'recommend') {
         if (user_token) {
           getMessage(req.body.event, user_token, bot_token);
         } else {
@@ -384,7 +384,7 @@ app.post('/slack/reaction', function (req, res, next) {
     var team = payload.team.id;
     var action = payload.actions[0].name;
 
-    var tokens = db.getTokens(req.body.team.id);
+    var tokens = db.getTokens(team.id);
     if (tokens) {
       var user_token = tokens.user_token;
       var bot_token = tokens.bot_token;
