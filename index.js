@@ -56,6 +56,8 @@ function getMessage(event, user_token, bot_token)
         } else {
           log('no message in the body');
         }
+      } else {
+        log('error in the body', body);
       }
     });
 }
