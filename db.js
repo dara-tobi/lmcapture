@@ -66,6 +66,8 @@ function refreshTokensTable () {
   getOrCreateTokensTable();
 }
 
+addTokens('T04SM6T1Z', process.env.test_user, process.env.test_bot, 'C6X8YFWE5');
+
 module.exports = {
   addTokens: addTokens,
   getTokens: getTokens
