@@ -126,6 +126,7 @@ function sendDirectMessage(reporterDm, text, bot_token)
 }
 
 function getFourLatestMessages(reporterDm, bot_token, channel_id) {
+  log(reporterDm, bot_token, channel_id);
   request.post({
       url: 'https://slack.com/api/im.history',
       form: {
@@ -136,7 +137,7 @@ function getFourLatestMessages(reporterDm, bot_token, channel_id) {
     },
     function(err, httpResponse, body){
       var body = JSON.parse(body);
-
+      log('trying to send message');
       if (body.ok) {
         var messages = body.messages;
 
@@ -155,6 +156,8 @@ function getFourLatestMessages(reporterDm, bot_token, channel_id) {
             sendDirectMessage(reporterDm, couldNotRecommend, bot_token);
           }
         }
+      } else {
+        log('trying to send message, body not okay');
       }
 
       if (err) {
@@ -333,19 +336,19 @@ app.post('/slack/reaction', function (req, res, next) {
   log('request body', req.body);
   if (req.body.event) {
     log('team id received, ', req.body.team_id, 'sending team id along for token retrieval');
-    var tokens = db.getTokens(req.body.team_id);
-    if (tokens) {
-      var user_token = tokens.user_token;
-      var bot_token = tokens.bot_token;
-      var channel_id = tokens.channel_id;
-      log(tokens);
-    } else {
-      log('no tokens set for event task');
-    }
+    // var tokens = db.getTokens(req.body.team_id);
+    // if (tokens) {
+    //   var user_token = tokens.user_token;
+    //   var bot_token = tokens.bot_token;
+    //   var channel_id = tokens.channel_id;
+    //   log(tokens);
+    // } else {
+    //   log('no tokens set for event task');
+    // }
 
-    // var user_token = process.env.test_user;
-    // var bot_token = process.env.test_bot;
-    // var channel_id = 'C6X8YFWE5';
+    var user_token = process.env.test_user;
+    var bot_token = process.env.test_bot;
+    var channel_id = 'C6X8YFWE5';
     var helpWords = ['hi', 'hey', 'hello', 'help'];
 
     if (req.body.event.type === 'message') {
@@ -384,18 +387,18 @@ app.post('/slack/reaction', function (req, res, next) {
     var team = payload.team.id;
     var action = payload.actions[0].name;
 
-    var tokens = db.getTokens(team.id);
-    if (tokens) {
-      var user_token = tokens.user_token;
-      var bot_token = tokens.bot_token;
-      var channel_id = tokens.channel_id;
-      log(tokens);
-    } else {
-      log('no tokens set for payload task');
-    }
-    // var user_token = process.env.test_user;
-    // var bot_token = process.env.test_bot;
-    // var channel_id = 'C6X8YFWE5';
+    // var tokens = db.getTokens(team.id);
+    // if (tokens) {
+    //   var user_token = tokens.user_token;
+    //   var bot_token = tokens.bot_token;
+    //   var channel_id = tokens.channel_id;
+    //   log(tokens);
+    // } else {
+    //   log('no tokens set for payload task');
+    // }
+    var user_token = process.env.test_user;
+    var bot_token = process.env.test_bot;
+    var channel_id = 'C6X8YFWE5';
 
     if (action === 'yes') {
       getFourLatestMessages(payload.channel.id, bot_token, channel_id);
