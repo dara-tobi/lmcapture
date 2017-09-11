@@ -28,7 +28,7 @@ function getMessage(event, user_token, bot_token)
     function(err, httpResponse, body){ 
       var body = JSON.parse(body);
       var message = null;
-      log('found message in channel, finding reporter dm');
+
       if (body.ok) {
         for (var i = 0; i < body.messages.length; i++) {
           if (body.messages[i].user == event.item_user && body.messages[i].ts == item.ts) {
@@ -51,7 +51,6 @@ function getMessage(event, user_token, bot_token)
 
 function postMessageToChannel(text, bot_token, channel_id)
 {
-  log('posting message to channel');
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
       form: {
@@ -64,8 +63,6 @@ function postMessageToChannel(text, bot_token, channel_id)
     function(err, httpResponse, body){
       if (err) {
         log('error ', err);
-      } else {
-        log('effect of post to channel', body);
       }
     });
 
@@ -119,8 +116,6 @@ function sendDirectMessage(reporterDm, text, bot_token)
     function(err, httpResponse, body){
       if (err) {
         log('error ', err);
-      } else {
-        log('effect of direct message', body);
       }
     });
 }
@@ -137,7 +132,7 @@ function getFourLatestMessages(reporterDm, bot_token, channel_id) {
     },
     function(err, httpResponse, body){
       var body = JSON.parse(body);
-      log('trying to send message');
+
       if (body.ok) {
         var messages = body.messages;
 
@@ -252,7 +247,6 @@ function sendConfirmationMessage(reporterDm, text, bot_token) {
 
   if (text.attachments) {
     attachments = JSON.stringify(text.attachments);
-    log('attachments payload', attachments);
   } else {
     log('no attachments found');
   }
@@ -272,7 +266,6 @@ function sendConfirmationMessage(reporterDm, text, bot_token) {
       }
     },
     function(err, httpResponse, body){
-      console.log('received body right after sending request', body);
 
       if (err) {
         log('error ', err);
@@ -291,8 +284,7 @@ app.post('/slack/auth', function(req, res){
 });
 
 app.get('/slack/auth', function (req, res) {
-  // log('received get... body:', req.body);
-  log('received code... code:', req.query.code);
+
   request.post({
       url: 'https://slack.com/api/oauth.access',
       form: {
@@ -307,35 +299,20 @@ app.get('/slack/auth', function (req, res) {
       }
 
       var body = JSON.parse(body);
-      log('body should contain token:', body);
-
       var user_token = body.access_token;
       var bot_token = body.bot.bot_access_token;
       var teamId = body.team_id;
       var channel_id = body.incoming_webhook.channel_id;
-      log('auth accepted, sending details to be saved', teamId, user_token, bot_token, channel_id);
+
       db.addTokens(teamId, user_token, bot_token, channel_id);
 
       res.status(200).send('Slack app has been installed, you may now return to slack :)');
     });
 });
 
-// app.post('/slack/access', function (req, res) {
-//   log('received post... body:', req.body);
-// });
-
-// app.get('/slack/auth', function (req, res) {
-//   log('receiving code');
-//   log('query', req.query.code);
-
-//   res.redirect('https://slack.com/oauth/authorize?&client_id=65743207921.231877010403&scope=reactions:read,chat:write:bot,incoming-webhook,emoji:read,channels:history,im:history,im:read,im:write,bot&redirect_uri=https://lmedia.herokuapp.com/slack/access');
-
-// });
-
 app.post('/slack/reaction', function (req, res, next) {
-  log('request body', req.body);
+
   if (req.body.event) {
-    log('team id received, ', req.body.team_id, 'sending team id along for token retrieval');
     var tokens = db.getTokens(req.body.team_id);
     if (tokens) {
       var user_token = tokens.user_token;
