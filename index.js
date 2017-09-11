@@ -380,7 +380,7 @@ app.post('/slack/reaction', function (req, res, next) {
   }
 
   if (req.body.payload) {
-    var tokens = db.getTokens(req.payload.team.id);
+    var tokens = db.getTokens(req.body.team.id);
     if (tokens) {
       var user_token = tokens.user_token;
       var bot_token = tokens.bot_token;
