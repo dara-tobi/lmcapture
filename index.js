@@ -380,6 +380,10 @@ app.post('/slack/reaction', function (req, res, next) {
   }
 
   if (req.body.payload) {
+    var payload = JSON.parse(req.body.payload);
+    var team = payload.team.id;
+    var action = payload.actions[0].name;
+
     var tokens = db.getTokens(req.body.team.id);
     if (tokens) {
       var user_token = tokens.user_token;
@@ -392,9 +396,6 @@ app.post('/slack/reaction', function (req, res, next) {
     // var user_token = process.env.test_user;
     // var bot_token = process.env.test_bot;
     // var channel_id = 'C6X8YFWE5';
-    var payload = JSON.parse(req.body.payload);
-    var team = payload.team.id;
-    var action = payload.actions[0].name;
 
     if (action === 'yes') {
       getFourLatestMessages(payload.channel.id, bot_token, channel_id);
