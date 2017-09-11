@@ -12,6 +12,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 function getMessage(event, user_token, bot_token)
 {
+  log(event);
   var item = event.item;
   var latest = item.ts;
   log('finding message in channel');
@@ -26,6 +27,9 @@ function getMessage(event, user_token, bot_token)
       }
     },
     function(err, httpResponse, body){ 
+      if (err) {
+        log('error trying to find message', err);
+      }
       var body = JSON.parse(body);
       var message = null;
 
