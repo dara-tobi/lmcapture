@@ -45,7 +45,8 @@ function getMessage(event, user_token, bot_token)
       var message = null;
 
       if (body.ok) {
-        if (body.message[0]) {
+        if (body.messages[0]) {
+          message = body.messages[0];
           var text = message.text;
           var reporter = event.user;
           log('reporter: ', reporter);
