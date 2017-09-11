@@ -314,6 +314,7 @@ app.get('/slack/auth', function (req, res) {
       var teamId = body.team_id;
       var channel_id = body.incoming_webhook.channel_id;
 
+      log("tokens received from slack", user_token, bot_token);
       db.addTokens(teamId, user_token, bot_token, channel_id);
 
       res.status(200).send('Slack app has been installed, you may now return to slack :)');
