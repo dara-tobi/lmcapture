@@ -15,9 +15,20 @@ function getMessage(event, user_token, bot_token)
   log(event);
   var item = event.item;
   var latest = item.ts;
+  var url = null;
+
   log('finding message in channel');
+
+  if (item.channel[0].toLowerCase() === 'g') {
+    log('reaction made in a group');
+    url = 'https://slack.com/api/groups.history'
+  } else {
+    log('reaction made in a channel');
+    url = 'https://slack.com/api/channels.history';
+  }
+
   request.post({
-      url: 'https://slack.com/api/channels.history',
+      url: url,
       form: {
         'token': user_token,
         'channel': item.channel,
@@ -34,20 +45,15 @@ function getMessage(event, user_token, bot_token)
       var message = null;
 
       if (body.ok) {
-        for (var i = 0; i < body.messages.length; i++) {
-          if (body.messages[i].user == event.item_user && body.messages[i].ts == item.ts) {
-            message = body.messages[i];
-            break;
-          }
-        }
-
-        if (message) {
+        if (body.message[0]) {
           var text = message.text;
           var reporter = event.user;
           log('reporter: ', reporter);
           var owner = message.user;
 
           findDirectMessageId(text, reporter, owner, bot_token);
+        } else {
+          log('no message in the body');
         }
       }
     });
