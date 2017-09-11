@@ -5,6 +5,8 @@ var log = console.log;
 var request = require('request');
 var db = require('./db');
 
+var couldNotRecommend = "Sorry, I couldn't find the resource you're trying to recommend. \n Add the `:resauce:` reaction on a post that has a link to get started.";
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -86,7 +88,7 @@ function findDirectMessageId(text, reporter, owner, bot_token)
       if (url) {
         sendDirectMessage(reporterDm, 'Hi <@' + reporter + '>, you marked the link `'+ url +'` as recommendable. What audience would you recommend the it to?', bot_token);
       } else {
-        sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend", bot_token);
+        sendDirectMessage(reporterDm, couldNotRecommend, bot_token);
       }
     });
 }
@@ -147,10 +149,10 @@ function getFourLatestMessages(reporterDm, bot_token, channel_id) {
             if (url) {
               postMessageToChannel("*Resource:* " + url + " \n *Audience:* `" + audience + "`", bot_token, channel_id);
             } else {
-              sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend", bot_token);
+              sendDirectMessage(reporterDm, couldNotRecommend, bot_token);
             }
           } else {
-            sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend", bot_token);
+            sendDirectMessage(reporterDm, couldNotRecommend, bot_token);
           }
         }
       }
@@ -229,10 +231,10 @@ function getTwoLatestMessages(reporterDm, bot_token) {
 
               sendConfirmationMessage(reporterDm, confirmation, bot_token);
             } else {
-              sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend", bot_token);
+              sendDirectMessage(reporterDm, couldNotRecommend, bot_token);
             }
           } else {
-            sendDirectMessage(reporterDm, "Sorry, I couldn't find the resource you're trying to recommend", bot_token);
+            sendDirectMessage(reporterDm, couldNotRecommend, bot_token);
           }
         }
       }
@@ -344,6 +346,7 @@ app.post('/slack/reaction', function (req, res, next) {
     var user_token = process.env.test_user;
     var bot_token = process.env.test_bot;
     var channel_id = 'C6X8YFWE5';
+    var helpWords = ['hi', 'hey', 'hello', 'help'];
 
     if (req.body.event.type === 'message') {
       if (req.body.event.text) {
@@ -354,6 +357,8 @@ app.post('/slack/reaction', function (req, res, next) {
               getFourLatestMessages(req.body.event.channel, bot_token, channel_id);
             } else if (req.body.event.text.toLowerCase() === 'no') {
               sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation', bot_token);
+            } else if (helpWords.indexOf(req.body.event.text.toLowerCase()) !== -1) {
+              sendDirectMessage(req.body.event.channel, "Add the `:resauce:` reaction to a post with a link to get started.", bot_token);
             } else {
               // get last two messages, in order to confirm that the user is actually recommending something
               getTwoLatestMessages(req.body.event.channel, bot_token);
@@ -379,17 +384,14 @@ app.post('/slack/reaction', function (req, res, next) {
     var bot_token = process.env.test_bot;
     var channel_id = 'C6X8YFWE5';
     var payload = JSON.parse(req.body.payload);
-    log('payload', payload);
-    log('actions', payload.actions);
-    log('typeof payload', typeof payload);
+    var team = payload.team.id;
     var action = payload.actions[0].name;
+
     if (action === 'yes') {
-            // sendDirectMessage(payload.channel.id, 'Recommendation sent; thank you!', bot_token);
       getFourLatestMessages(payload.channel.id, bot_token, channel_id);
-      res.send('recommend sent');
+      res.send('Recommendation sent; thank you!');
     } else {
-      res.send('cancel');
-      // sendDirectMessage(payload.channel.id, 'Okay, cancelling.', bot_token);
+      res.send('Okay, cancelling...');
     }
   }
 
