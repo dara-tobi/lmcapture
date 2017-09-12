@@ -400,8 +400,6 @@ app.post('/slack/reaction', function (req, res, next) {
     } else {
       res.send('Okay, cancelling...');
     }
-  if (req.body.event || req.body.payload) {
-    res.status(200).end();
   }
 
 
