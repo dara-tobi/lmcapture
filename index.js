@@ -287,7 +287,7 @@ function sendConfirmationMessage(reporterDm, text, bot_token) {
 }
 
 app.get('/', function (req, res) {
-   res.send('hello world');
+   res.send('<div style="margin: 200px 400px; padding: 50px; box-shadow: 0 0 1px silver; border-radius:7px;">Install the learning media slack app <a href="https://slack.com/oauth/authorize?&client_id=65743207921.231877010403&scope=reactions:read,chat:write:bot,incoming-webhook,emoji:read,channels:history,im:history,im:read,im:write,bot"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a></div>');
 });
 
 app.post('/slack/auth', function(req, res){
