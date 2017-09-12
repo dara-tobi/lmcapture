@@ -325,7 +325,7 @@ app.get('/slack/auth', function (req, res) {
 });
 
 app.post('/slack/reaction', function (req, res, next) {
-
+  res.status(200).end();
   if (req.body.event) {
     var tokens = db.getTokens(req.body.team_id);
     if (tokens) {
@@ -397,10 +397,6 @@ app.post('/slack/reaction', function (req, res, next) {
     } else {
       res.send('Okay, cancelling...');
     }
-  }
-
-  if (req.body.event || req.body.payload) {
-    res.status(200).end();
   }
 
   if (req.body.challenge) {
