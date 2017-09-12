@@ -312,6 +312,7 @@ app.get('/slack/auth', function (req, res) {
       }
 
       var body = JSON.parse(body);
+      log('auth response', body);
       var user_token = body.access_token;
       var bot_token = body.bot.bot_access_token;
       var teamId = body.team_id;
