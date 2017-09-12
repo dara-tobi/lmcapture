@@ -70,7 +70,7 @@ function postMessageToChannel(text, bot_token, channel_id)
         token: bot_token,
         text: text,
         channel: channel_id,
-        username: 'Learning Media Bot'
+        username: 'resaucebot'
       }
     },
     function(err, httpResponse, body){
@@ -123,7 +123,7 @@ function sendDirectMessage(reporterDm, text, bot_token)
         text: text,
         attachments: attachments,
         channel: reporterDm,
-        username: 'Learning Media Bot'
+        username: 'resaucebot'
       }
     },
     function(err, httpResponse, body){
@@ -275,7 +275,7 @@ function sendConfirmationMessage(reporterDm, text, bot_token) {
         attachments: attachments,
         token: bot_token,
         channel: reporterDm,
-        username: 'Learning Media Bot'
+        username: 'resauce'
       }
     },
     function(err, httpResponse, body){
