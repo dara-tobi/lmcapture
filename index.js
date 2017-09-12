@@ -331,50 +331,52 @@ app.post('/slack/reaction', function (req, res, next) {
   }
 
   if (req.body.event) {
-    var tokens = db.getTokens(req.body.team_id);
-    if (tokens) {
-      var user_token = tokens.user_token;
-      var bot_token = tokens.bot_token;
-      var channel_id = tokens.channel_id;
-      log(tokens);
-    } else {
-      log('no tokens set for event task');
-    }
+    var timeout = setTimeout(function () {
+      var tokens = db.getTokens(req.body.team_id);
+      if (tokens) {
+        var user_token = tokens.user_token;
+        var bot_token = tokens.bot_token;
+        var channel_id = tokens.channel_id;
+        log(tokens);
+      } else {
+        log('no tokens set for event task');
+      }
 
-    // var user_token = process.env.test_user;
-    // var bot_token = process.env.test_bot;
-    // var channel_id = 'C6X8YFWE5';
-    var helpWords = ['hi', 'hey', 'hello', 'help'];
+      // var user_token = process.env.test_user;
+      // var bot_token = process.env.test_bot;
+      // var channel_id = 'C6X8YFWE5';
+      var helpWords = ['hi', 'hey', 'hello', 'help'];
 
-    if (req.body.event.type === 'message') {
-      if (req.body.event.text) {
-        if (req.body.event.user) {
-          if (bot_token) {
-            if (req.body.event.text.toLowerCase() == 'yes') {
-              // get last four messages, in order to retrieve resource and audience to be posted
-              getFourLatestMessages(req.body.event.channel, bot_token, channel_id);
-            } else if (req.body.event.text.toLowerCase() === 'no') {
-              sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation', bot_token);
-            } else if (helpWords.indexOf(req.body.event.text.toLowerCase()) !== -1) {
-              sendDirectMessage(req.body.event.channel, "Add the `:resauce:` reaction to a post that contains a link to get started.", bot_token);
-            } else {
-              // get last two messages, in order to confirm that the user is actually recommending something
-              getTwoLatestMessages(req.body.event.channel, bot_token);
+      if (req.body.event.type === 'message') {
+        if (req.body.event.text) {
+          if (req.body.event.user) {
+            if (bot_token) {
+              if (req.body.event.text.toLowerCase() == 'yes') {
+                // get last four messages, in order to retrieve resource and audience to be posted
+                getFourLatestMessages(req.body.event.channel, bot_token, channel_id);
+              } else if (req.body.event.text.toLowerCase() === 'no') {
+                sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation', bot_token);
+              } else if (helpWords.indexOf(req.body.event.text.toLowerCase()) !== -1) {
+                sendDirectMessage(req.body.event.channel, "Add the `:resauce:` reaction to a post that contains a link to get started.", bot_token);
+              } else {
+                // get last two messages, in order to confirm that the user is actually recommending something
+                getTwoLatestMessages(req.body.event.channel, bot_token);
+              }
             }
           }
         }
       }
-    }
 
-    if (req.body.event.reaction) {
-      if (req.body.event.reaction === 'resauce' || req.body.event.reaction === 'recommend') {
-        if (user_token) {
-          getMessage(req.body.event, user_token, bot_token);
-        } else {
-          log('no user token set');
+      if (req.body.event.reaction) {
+        if (req.body.event.reaction === 'resauce' || req.body.event.reaction === 'recommend') {
+          if (user_token) {
+            getMessage(req.body.event, user_token, bot_token);
+          } else {
+            log('no user token set');
+          }
         }
       }
-    }
+    }, 1200);
   }
 
   if (req.body.payload) {
