@@ -325,7 +325,7 @@ app.get('/slack/auth', function (req, res) {
 });
 
 app.post('/slack/reaction', function (req, res, next) {
-  if (req.body.event || req.body.payload) {
+  if (req.body.event) {
     res.status(200).end();
   }
 
@@ -400,6 +400,8 @@ app.post('/slack/reaction', function (req, res, next) {
     } else {
       res.send('Okay, cancelling...');
     }
+
+    res.status(200).end();
   }
 
 
