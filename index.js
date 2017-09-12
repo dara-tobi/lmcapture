@@ -313,15 +313,20 @@ app.get('/slack/auth', function (req, res) {
 
       var body = JSON.parse(body);
       log('auth response', body);
-      var user_token = body.access_token;
-      var bot_token = body.bot.bot_access_token;
-      var teamId = body.team_id;
-      var channel_id = body.incoming_webhook.channel_id;
 
-      log("tokens received from slack", user_token, bot_token);
-      db.addTokens(teamId, user_token, bot_token, channel_id);
+      if (body.ok) {
+        var user_token = body.access_token;
+        var bot_token = body.bot.bot_access_token;
+        var teamId = body.team_id;
+        var channel_id = body.incoming_webhook.channel_id;
 
-      res.status(200).send('<div style="margin: 200px 400px; padding: 50px; box-shadow: 0 0 1px silver; border-radius:7px;"><h3> Slack app has been installed, you may now return to slack :) </h3></div>');
+        log("tokens received from slack", user_token, bot_token);
+        db.addTokens(teamId, user_token, bot_token, channel_id);
+
+        res.status(200).send('<div style="margin: 200px 400px; padding: 50px; box-shadow: 0 0 1px silver; border-radius:7px;"><h3> Slack app has been installed, you may now return to slack :) </h3></div>');
+      } else {
+        res.send('<div style="margin: 200px 400px; padding: 50px; box-shadow: 0 0 1px silver; border-radius:7px;"><h3> An error occurred while trying to add the app to Slack. Please contact any of the Admins of your Slack team about this :( </h3></div>');
+      }
     });
 });
 
