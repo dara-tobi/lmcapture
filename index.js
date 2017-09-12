@@ -404,7 +404,7 @@ app.post('/slack/reaction', function (req, res, next) {
 
     if (action === 'yes') {
       getFourLatestMessages(payload.channel.id, bot_token, channel_id);
-      res.send('Recommendation sent; thank you!');
+      res.send("Recommendation sent; thank you! \n View your recommendation in <#{" + channel_id + "}>.");
     } else {
       res.send('Okay, cancelling...');
     }
