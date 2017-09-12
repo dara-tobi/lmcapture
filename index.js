@@ -321,7 +321,7 @@ app.get('/slack/auth', function (req, res) {
       log("tokens received from slack", user_token, bot_token);
       db.addTokens(teamId, user_token, bot_token, channel_id);
 
-      res.status(200).send('Slack app has been installed, you may now return to slack :)');
+      res.status(200).send('<div style="margin: 200px 400px; padding: 50px; box-shadow: 0 0 1px silver; border-radius:7px;"><h3> Slack app has been installed, you may now return to slack :) </h3></div>');
     });
 });
 
