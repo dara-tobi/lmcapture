@@ -5,7 +5,7 @@ var log = console.log;
 var request = require('request');
 var db = require('./db');
 
-var couldNotRecommend = "Sorry, I couldn't find the resource you're trying to recommend. \n Add the `:resauce:` reaction to a post that contains a link to get started.";
+var couldNotRecommend = "Sorry, I couldn't find the resource you're trying to recommend. \n Add the `:resauce:` reaction to a post (in a public channel) that contains a link to get started.";
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -287,7 +287,7 @@ function sendConfirmationMessage(reporterDm, text, bot_token) {
 }
 
 app.get('/', function (req, res) {
-   res.send('<div style="margin: 200px 400px; padding: 50px; box-shadow: 0 0 1px silver; border-radius:7px;"><h3>Install the learning media slack app </h3><a href="https://slack.com/oauth/authorize?&client_id=65743207921.238722714675&scope=reactions:read,bot,channels:history,chat:write:bot,im:write,im:read,im:history,emoji:read,incoming-webhook,groups:history"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a></div>');
+   res.send('<div style="margin: 200px 400px; padding: 50px; box-shadow: 0 0 1px silver; border-radius:7px;"><h3>Install the learning media slack app </h3><p>On the next page, make sure to pick #lm-tech-digest as the channel that the app should post to</p><a href="https://slack.com/oauth/authorize?&client_id=65743207921.238722714675&scope=reactions:read,bot,channels:history,chat:write:bot,im:write,im:read,im:history,emoji:read,incoming-webhook,groups:history"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a></div>');
 });
 
 app.post('/slack/auth', function(req, res){
@@ -362,7 +362,7 @@ app.post('/slack/reaction', function (req, res, next) {
               } else if (req.body.event.text.toLowerCase() === 'no') {
                 sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation', bot_token);
               } else if (helpWords.indexOf(req.body.event.text.toLowerCase()) !== -1) {
-                sendDirectMessage(req.body.event.channel, "Add the `:resauce:` reaction to a post that contains a link to get started.", bot_token);
+                sendDirectMessage(req.body.event.channel, "Add the `:resauce:` reaction to a post (in a public channel) that contains a link to get started.", bot_token);
               } else {
                 // get last two messages, in order to confirm that the user is actually recommending something
                 getTwoLatestMessages(req.body.event.channel, bot_token);
