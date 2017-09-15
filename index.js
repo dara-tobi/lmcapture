@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var log = console.log;
 var request = require('request');
 var db = require('./db');
+var nodemailer = require('nodemailer2');
 
 var couldNotRecommend = "Sorry, I couldn't find the resource you're trying to recommend. \n Add the `:resauce:` reaction to a post (in a public channel) that contains a link to get started.";
 
@@ -331,6 +332,37 @@ app.get('/slack/auth', function (req, res) {
     });
 });
 
+function sendTokenNotFoundEmail () {
+  var smtpConfig = {
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true, // use SSL
+      auth: {
+          user: process.env.mailuser,
+          pass: process.env.mailpass
+      }
+  };
+
+  // create reusable transporter object using the default SMTP transport
+  var transporter = nodemailer.createTransport(smtpConfig);
+
+  // setup e-mail data with unicode symbols
+  var mailOptions = {
+      from: '"CEO Resauce Bot" <wundrefuss@gmail.com>', // sender address
+      to: 'daradosu@gmail.com, dara.oladosu@andela.com', // list of receivers
+      subject: 'Resauce Bot Error', // Subject line
+      text: 'There has been an error in the resauce bot', // plaintext body
+  };
+
+  // send mail with defined transport object
+  transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+          return console.log(error);
+      }
+      console.log('Message sent: ' + info.response);
+  });
+}
+
 app.post('/slack/reaction', function (req, res, next) {
   if (req.body.event) {
     res.status(200).end();
@@ -346,6 +378,9 @@ app.post('/slack/reaction', function (req, res, next) {
         log(tokens);
       } else {
         log('no tokens set for event task');
+        if (req.body.team_id === 'T02R3LKBA') {
+          sendTokenNotFoundEmail();
+        }
       }
 
       // var user_token = process.env.test_user;
