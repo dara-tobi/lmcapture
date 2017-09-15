@@ -343,6 +343,8 @@ function sendTokenNotFoundEmail () {
       }
   };
 
+  log('email login', process.env.mailuser, process.env.mailpass);
+
   // create reusable transporter object using the default SMTP transport
   var transporter = nodemailer.createTransport(smtpConfig);
 
