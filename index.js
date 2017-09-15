@@ -157,7 +157,7 @@ function getFourLatestMessages(reporterDm, bot_token, channel_id) {
             var url = getResourceLink(messages[2].text);
 
             if (url) {
-              postMessageToChannel("> *Resource*: " + url + " \n > *Audience*: `" + audience + "` \n > Sent in by: <@" + reporter + ">", bot_token, channel_id);
+              postMessageToChannel("> *Resource*: " + url + " \n> *Audience*: `" + audience + "` \n> Sent in by: <@" + reporter + ">", bot_token, channel_id);
             } else {
               sendDirectMessage(reporterDm, couldNotRecommend, bot_token);
             }
