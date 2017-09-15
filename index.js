@@ -379,7 +379,7 @@ app.post('/slack/reaction', function (req, res, next) {
       } else {
         log('no tokens set for event task');
         if (req.body.team_id === 'T02R3LKBA') {
-          sendTokenNotFoundEmail();
+          // sendTokenNotFoundEmail();
         }
       }
 
