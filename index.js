@@ -148,15 +148,16 @@ function getFourLatestMessages(reporterDm, bot_token, channel_id) {
 
       if (body.ok) {
         var messages = body.messages;
-        log(messages);
+
         if (messages.length === 4) {
           if (messages[0].subtype && messages[0].subtype === 'bot_message' && messages[2].subtype && messages[2].subtype === 'bot_message') {
 
             var audience = messages[1].text;
+            var reporter = messages[1].user;
             var url = getResourceLink(messages[2].text);
 
             if (url) {
-              postMessageToChannel("*Resource:* " + url + " \n *Audience:* `" + audience + "`", bot_token, channel_id);
+              postMessageToChannel("*Resource:* " + url + " \n *Audience:* `" + audience + "` \n *Sent by:* <@" + reporter + ">", bot_token, channel_id);
             } else {
               sendDirectMessage(reporterDm, couldNotRecommend, bot_token);
             }
