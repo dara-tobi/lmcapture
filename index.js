@@ -148,7 +148,7 @@ function getFourLatestMessages(reporterDm, bot_token, channel_id) {
 
       if (body.ok) {
         var messages = body.messages;
-
+        log(messages);
         if (messages.length === 4) {
           if (messages[0].subtype && messages[0].subtype === 'bot_message' && messages[2].subtype && messages[2].subtype === 'bot_message') {
 
