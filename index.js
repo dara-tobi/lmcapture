@@ -3,7 +3,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var log = console.log;
 var request = require('request');
-var db = require('./db');
+var db = require('./pgdb');
 var nodemailer = require('nodemailer2');
 
 var couldNotRecommend = "Sorry, I couldn't find the resource you're trying to recommend. \n Add the `:resauce:` reaction to a post (in a public channel) that contains a link to get started.";
