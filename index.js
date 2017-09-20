@@ -97,7 +97,7 @@ function findDirectMessageId(text, reporter, owner, bot_token)
       var url = getResourceLink(text);
 
       if (url) {
-        sendDirectMessage(reporterDm, 'Hi <@' + reporter + '>, you marked the link `'+ url +'` as recommendable. What audience would you recommend the it to?', bot_token);
+        sendDirectMessage(reporterDm, 'Hi <@' + reporter + '>, you marked the link `'+ url +'` as recommendable. What audience would you recommend it to?', bot_token);
       } else {
         sendDirectMessage(reporterDm, couldNotRecommend, bot_token);
       }
