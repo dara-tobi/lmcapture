@@ -6,7 +6,8 @@ var request = require('request');
 var db = require('./pgdb');
 var nodemailer = require('nodemailer2');
 
-var couldNotRecommend = "Sorry, I couldn't find the resource you're trying to recommend. \n To get started, send me a link or add the `:resauce:` reaction to a post (in a public channel) that contains a link.";
+var getStartedMessage = "To get started, send me a link or add the `:resauce:` reaction to a post (in a public channel) that contains a link.";
+var couldNotRecommend = "Sorry, I couldn't find the resource you're trying to recommend. \n " + getStartedMessage;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -401,7 +402,7 @@ app.post('/slack/reaction', function (req, res, next) {
               } else if (req.body.event.text.toLowerCase() === 'no') {
                 sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation', bot_token);
               } else if (helpWords.indexOf(req.body.event.text.toLowerCase()) !== -1) {
-                sendDirectMessage(req.body.event.channel, "Add the `:resauce:` reaction to a post (in a public channel) that contains a link to get started.", bot_token);
+                sendDirectMessage(req.body.event.channel, getStartedMessage, bot_token);
               } else {
                 // get last two messages, in order to confirm that the user is actually recommending something
                 getTwoLatestMessages(req.body.event.channel, bot_token);
