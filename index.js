@@ -6,7 +6,7 @@ var request = require('request');
 var db = require('./pgdb');
 var nodemailer = require('nodemailer2');
 
-var couldNotRecommend = "Sorry, I couldn't find the resource you're trying to recommend. \n Add the `:resauce:` reaction to a post (in a public channel) that contains a link to get started.";
+var couldNotRecommend = "Sorry, I couldn't find the resource you're trying to recommend. \n To get started, send me a link or add the `:resauce:` reaction to a post (in a public channel) that contains a link.";
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -81,7 +81,7 @@ function postMessageToChannel(text, bot_token, channel_id)
 
 }
 
-function findDirectMessageId(text, reporter, bot_token)
+function findDirectMessageId(text, reporter, bot_token, linkSentDirectly)
 {
   request.post({
       url: 'https://slack.com/api/im.open',
@@ -94,9 +94,11 @@ function findDirectMessageId(text, reporter, bot_token)
       var body = JSON.parse(body);
       var reporterDm = body.channel.id;
       var url = getResourceLink(text);
-
+      var messageToSend = linkSentDirectly ?
+        'Hi <@' + req.body.event.user + '>, you\'re recommending `'+ url +'`. What audience would you recommend it to?'
+        : 'Hi <@' + reporter + '>, you marked the link `'+ url +'` as recommendable. What audience would you recommend it to?';
       if (url) {
-        sendDirectMessage(reporterDm, 'Hi <@' + reporter + '>, you marked the link `'+ url +'` as recommendable. What audience would you recommend it to?', bot_token);
+        sendDirectMessage(reporterDm, messageToSend, bot_token);
       } else {
         sendDirectMessage(reporterDm, couldNotRecommend, bot_token);
       }
@@ -391,7 +393,9 @@ app.post('/slack/reaction', function (req, res, next) {
         if (req.body.event.text) {
           if (req.body.event.user) {
             if (bot_token) {
-              if (req.body.event.text.toLowerCase() == 'yes') {
+              if (getResourceLink(req.body.event.text)) {
+                findDirectMessageId(req.body.event.text, req.body.event.user, bot_token, true);
+              } else if (req.body.event.text.toLowerCase() === 'yes') {
                 // get last four messages, in order to retrieve resource and audience to be posted
                 getFourLatestMessages(req.body.event.channel, bot_token, channel_id);
               } else if (req.body.event.text.toLowerCase() === 'no') {
