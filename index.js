@@ -51,9 +51,8 @@ function getMessage(event, user_token, bot_token)
           var text = message.text;
           var reporter = event.user;
           log('reporter: ', reporter);
-          var owner = message.user;
 
-          findDirectMessageId(text, reporter, owner, bot_token);
+          findDirectMessageId(text, reporter, bot_token);
         } else {
           log('no message in the body');
         }
@@ -82,7 +81,7 @@ function postMessageToChannel(text, bot_token, channel_id)
 
 }
 
-function findDirectMessageId(text, reporter, owner, bot_token)
+function findDirectMessageId(text, reporter, bot_token)
 {
   request.post({
       url: 'https://slack.com/api/im.open',
