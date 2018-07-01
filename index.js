@@ -95,7 +95,7 @@ function findDirectMessageId(text, reporter, bot_token, linkSentDirectly)
       var reporterDm = body.channel.id;
       var url = getResourceLink(text);
       var messageToSend = linkSentDirectly ?
-        'Hi <@' + req.body.event.user + '>, you\'re recommending `'+ url +'`. What audience would you recommend it to?'
+        'Hi <@' + reporter + '>, you\'re recommending `'+ url +'`. What audience would you recommend it to?'
         : 'Hi <@' + reporter + '>, you marked the link `'+ url +'` as recommendable. What audience would you recommend it to?';
       if (url) {
         sendDirectMessage(reporterDm, messageToSend, bot_token);
