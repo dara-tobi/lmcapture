@@ -7,6 +7,9 @@
     "test": "test",
     "start": "node index.js"
   },
+  "engines": {
+    "node": "10"
+  },
   "author": "Tuvi",
   "license": "ISC",
   "dependencies": {
