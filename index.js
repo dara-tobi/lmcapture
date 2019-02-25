@@ -179,7 +179,7 @@ function getFourLatestMessages(reporterDm, bot_token, channel_id) {
 }
 
 function getResourceLink(text) {
-  var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+  var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,6}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
   var regex = new RegExp(expression);
   var url = text.match(regex);
 
@@ -209,7 +209,7 @@ function getTwoLatestMessages(reporterDm, bot_token) {
           if (messages[1].subtype && messages[1].subtype === 'bot_message') {
             
             var text = messages[0].text;
-            var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+            var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,6}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
             var regex = new RegExp(expression);
             var t = messages[1].text;
             var url = t.match(regex);
