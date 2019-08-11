@@ -11,17 +11,18 @@ var couldNotRecommend = "Sorry, I couldn't find the resource you're trying to re
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-function getMessage(event, user_token, bot_token)
-{
+function getMessageReactedTo(event, user_token, bot_token) {
   log(event);
   var item = event.item;
-  var latest = item.ts;
+  // message timestamps are used as their ids
+  var messageTimestamp = item.ts;
   var url = null;
 
   log('finding message in channel');
 
   if (item.channel[0].toLowerCase() === 'g') {
     log('reaction made in a group');
+    // not sure this is necessary as bots shouldn't have access to private groups... or should they??
     url = 'https://slack.com/api/groups.history'
   } else {
     log('reaction made in a channel');
@@ -33,12 +34,12 @@ function getMessage(event, user_token, bot_token)
       form: {
         'token': user_token,
         'channel': item.channel,
-        'latest': latest,
+        'latest': messageTimestamp,
         'inclusive': true,
         'count': 1
       }
     },
-    function(err, httpResponse, body){ 
+    function(err, httpResponse, body) {
       if (err) {
         log('error trying to find message', err);
       }
@@ -52,6 +53,7 @@ function getMessage(event, user_token, bot_token)
           var reporter = event.user;
           log('reporter: ', reporter);
 
+          // open a dm with the user who reacted to the message
           findDirectMessageId(text, reporter, bot_token);
         } else {
           log('no message in the body');
@@ -62,8 +64,7 @@ function getMessage(event, user_token, bot_token)
     });
 }
 
-function postMessageToChannel(text, bot_token, channel_id)
-{
+function postMessageToChannel(text, bot_token, channel_id) {
   request.post({
       url: 'https://slack.com/api/chat.postMessage',
       form: {
@@ -73,7 +74,7 @@ function postMessageToChannel(text, bot_token, channel_id)
         username: 'resaucebot'
       }
     },
-    function(err, httpResponse, body){
+    function(err, httpResponse, body) {
       if (err) {
         log('error ', err);
       }
@@ -81,8 +82,7 @@ function postMessageToChannel(text, bot_token, channel_id)
 
 }
 
-function findDirectMessageId(text, reporter, bot_token, linkSentDirectly)
-{
+function findDirectMessageId(text, reporter, bot_token, linkSentDirectly) {
   request.post({
       url: 'https://slack.com/api/im.open',
       form: {
@@ -90,10 +90,10 @@ function findDirectMessageId(text, reporter, bot_token, linkSentDirectly)
         user: reporter
       }
     },
-    function (err, httpResponse, body) {
+    function(err, httpResponse, body) {
       var body = JSON.parse(body);
       var reporterDm = body.channel.id;
-      var url = getResourceLink(text);
+      var url = getResourceLinkFromText(text);
       var messageToSend = linkSentDirectly ?
         'Hi <@' + reporter + '>, you\'re recommending `'+ url +'`. What audience would you recommend it to?'
         : 'Hi <@' + reporter + '>, you marked the link `'+ url +'` as recommendable. What audience would you recommend it to?';
@@ -105,8 +105,7 @@ function findDirectMessageId(text, reporter, bot_token, linkSentDirectly)
     });
 }
 
-function sendDirectMessage(reporterDm, text, bot_token)
-{
+function sendDirectMessage(reporterDm, text, bot_token) {
   var attachments = null;
   log('sending direct message');
   if (text.text) {
@@ -128,14 +127,14 @@ function sendDirectMessage(reporterDm, text, bot_token)
         username: 'resaucebot'
       }
     },
-    function(err, httpResponse, body){
+    function(err, httpResponse, body) {
       if (err) {
         log('error ', err);
       }
     });
 }
 
-function getFourLatestMessages(reporterDm, bot_token, channel_id) {
+function getFourLatestMessagesInUserDm(reporterDm, bot_token, channel_id) {
   log(reporterDm, bot_token, channel_id);
   request.post({
       url: 'https://slack.com/api/im.history',
@@ -145,7 +144,7 @@ function getFourLatestMessages(reporterDm, bot_token, channel_id) {
         count: 4
       }
     },
-    function(err, httpResponse, body){
+    function(err, httpResponse, body) {
       var body = JSON.parse(body);
 
       if (body.ok) {
@@ -156,14 +155,21 @@ function getFourLatestMessages(reporterDm, bot_token, channel_id) {
 
             var audience = messages[1].text;
             var reporter = messages[1].user;
-            var url = getResourceLink(messages[2].text);
+            var url = getResourceLinkFromText(messages[2].text);
 
             if (url) {
               postMessageToChannel("> *Resource*: " + url + " \n> *Audience*: `" + audience + "` \n> Sent in by: <@" + reporter + ">", bot_token, channel_id);
             } else {
+              // no url in the message sent to the bot
               sendDirectMessage(reporterDm, couldNotRecommend, bot_token);
             }
           } else {
+            // for the message to be posted to the channel, we need to check if the bot's user interaction flow is complete
+            // this flow is complete when
+            // 1. there's a url to be recommendeed
+            // 2. out of the last four messages in the user's dm, the first message and the 3rd message are from the bot to the user, of which:
+            //  i. the first message asks for audience
+            //  ii. the 3rd message asks for confirmation of audience and url, before posting the recommendation to the public channel
             sendDirectMessage(reporterDm, couldNotRecommend, bot_token);
           }
         }
@@ -177,7 +183,7 @@ function getFourLatestMessages(reporterDm, bot_token, channel_id) {
     });
 }
 
-function getResourceLink(text) {
+function getResourceLinkFromText(text) {
   var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,6}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
   var regex = new RegExp(expression);
   var url = text.match(regex);
@@ -189,7 +195,7 @@ function getResourceLink(text) {
   return null;
 }
 
-function getTwoLatestMessages(reporterDm, bot_token) {
+function getTwoLatestMessagesInUserDm(reporterDm, bot_token) {
   request.post({
       url: 'https://slack.com/api/im.history',
       form: {
@@ -198,7 +204,7 @@ function getTwoLatestMessages(reporterDm, bot_token) {
         count: 2
       }
     },
-    function(err, httpResponse, body){
+    function(err, httpResponse, body) {
       var body = JSON.parse(body);
       
       if (body.ok) {
@@ -245,6 +251,7 @@ function getTwoLatestMessages(reporterDm, bot_token) {
 
               sendConfirmationMessage(reporterDm, confirmation, bot_token);
             } else {
+              // link not found. Let the user know
               sendDirectMessage(reporterDm, couldNotRecommend, bot_token);
             }
           } else {
@@ -293,13 +300,13 @@ app.get('/', function (req, res) {
    res.send('<div style="margin: 200px 400px; padding: 50px; box-shadow: 0 0 1px silver; border-radius:7px;"><h3>Install the learning media slack app </h3><p>On the next page, make sure to pick #lm-tech-digest as the channel that the app should post to</p><a href="https://slack.com/oauth/authorize?&client_id=65743207921.238722714675&scope=reactions:read,bot,channels:history,chat:write:bot,im:write,im:read,im:history,emoji:read,incoming-webhook,groups:history"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a></div>');
 });
 
-app.post('/slack/auth', function(req, res){
+app.post('/slack/auth', function(req, res) {
   log('receiving token');
   log('token: ', req.body.access_token);
   log('bot token: ', req.body.bot.bot_access_token);
 });
 
-app.get('/slack/auth', function (req, res) {
+app.get('/slack/auth', function(req, res) {
 
   request.post({
       url: 'https://slack.com/api/oauth.access',
@@ -309,7 +316,7 @@ app.get('/slack/auth', function (req, res) {
         client_secret: process.env.resauce_client_secret
       }
     },
-    function(err, httpResponse, body){
+    function(err, httpResponse, body) {
       if (err) {
         log('error ', err);
       }
@@ -333,13 +340,14 @@ app.get('/slack/auth', function (req, res) {
     });
 });
 
-app.post('/slack/reaction', function (req, res, next) {
+// all of the stuff sent to us from Slack will come to this route '/slack/reaction'... route could've been better named at the beginning of this project, tbh
+app.post('/slack/reaction', function(req, res, next) {
   if (req.body.event) {
     res.status(200).end();
   }
 
   if (req.body.event) {
-    var timeout = setTimeout(function () {
+    setTimeout(function() {
       var tokens = db.getTokens(req.body.team_id);
       if (tokens) {
         var user_token = tokens.user_token;
@@ -358,36 +366,28 @@ app.post('/slack/reaction', function (req, res, next) {
       // var channel_id = 'C6X8YFWE5';
       var helpWords = ['hi', 'hey', 'hello', 'help'];
 
-      if (req.body.event.type === 'message') {
-        if (req.body.event.text) {
-          if (req.body.event.user) {
-            if (bot_token) {
-              if (getResourceLink(req.body.event.text)) {
-                findDirectMessageId(req.body.event.text, req.body.event.user, bot_token, true);
-              } else if (req.body.event.text.toLowerCase() === 'yes') {
-                // get last four messages, in order to retrieve resource and audience to be posted
-                getFourLatestMessages(req.body.event.channel, bot_token, channel_id);
-              } else if (req.body.event.text.toLowerCase() === 'no') {
-                sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation', bot_token);
-              } else if (helpWords.indexOf(req.body.event.text.toLowerCase()) !== -1) {
-                sendDirectMessage(req.body.event.channel, getStartedMessage, bot_token);
-              } else {
-                // get last two messages, in order to confirm that the user is actually recommending something
-                getTwoLatestMessages(req.body.event.channel, bot_token);
-              }
-            }
-          }
+      if (req.body.event.type === 'message' && req.body.event.text && req.body.event.user && bot_token) {
+        if (getResourceLinkFromText(req.body.event.text)) {
+          findDirectMessageId(req.body.event.text, req.body.event.user, bot_token, true);
+        } else if (req.body.event.text.toLowerCase() === 'yes') {
+          // get last four messages, in order to retrieve resource and audience to be posted
+          getFourLatestMessagesInUserDm(req.body.event.channel, bot_token, channel_id);
+        } else if (req.body.event.text.toLowerCase() === 'no') {
+          sendDirectMessage(req.body.event.channel, 'Okay, cancelling recommendation', bot_token);
+        } else if (helpWords.indexOf(req.body.event.text.toLowerCase()) !== -1) {
+          sendDirectMessage(req.body.event.channel, getStartedMessage, bot_token);
+        } else {
+          // get last two messages, in order to confirm that the user is actually recommending something
+          getTwoLatestMessagesInUserDm(req.body.event.channel, bot_token);
         }
       }
 
-      if (req.body.event.reaction) {
-        if (req.body.event.reaction === 'resauce' || req.body.event.reaction === 'recommend') {
-          if (user_token) {
-            getMessage(req.body.event, user_token, bot_token);
-          } else {
-            log('no user token set');
-          }
+      if (user_token) {
+        if (req.body.event.reaction && (req.body.event.reaction === 'resauce' || req.body.event.reaction === 'recommend')) {
+          getMessageReactedTo(req.body.event, user_token, bot_token);
         }
+      } else {
+        log('no user token set');
       }
     }, 1200);
   }
@@ -411,9 +411,11 @@ app.post('/slack/reaction', function (req, res, next) {
     // var channel_id = 'C6X8YFWE5';
 
     if (action === 'yes') {
-      getFourLatestMessages(payload.channel.id, bot_token, channel_id);
+      // user just confirmed that the bot should post the resource
+      getFourLatestMessagesInUserDm(payload.channel.id, bot_token, channel_id);
       res.send("Recommendation sent; thank you! \n View your recommendation in <#" + channel_id + ">.");
     } else {
+      // user cancelled the post action... let the user know that we're cancelling
       res.send('Okay, cancelling...');
     }
 
