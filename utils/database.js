@@ -56,3 +56,4 @@ function refreshTokensTable () {
 
 exports.addTokens = addTokens;
 exports.getTokens = getTokens;
+exports.getOrCreateTeamsTable = getOrCreateTeamsTable;
