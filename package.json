@@ -8,7 +8,7 @@
     "start": "node index.js"
   },
   "engines": {
-    "node": "10"
+    "node": "12"
   },
   "author": "Tuvi",
   "license": "ISC",
