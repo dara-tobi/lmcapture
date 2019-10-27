@@ -5,23 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "test",
-    "start": "node .",
-    "dev": "nodemon ."
+    "start": "node index.js"
   },
   "engines": {
-    "node": ">10"
+    "node": "10"
   },
   "author": "Tuvi",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.2",
-    "dotenv": "^8.1.0",
     "express": "^4.15.4",
     "pg-native": "^2.2.0",
     "request": "^2.81.0",
     "slack": "^8.3.1"
-  },
-  "devDependencies": {
-    "nodemon": "^1.19.2"
   }
 }
