@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.2",
-    "express": "^4.15.4",
+    "express": "^4.17.3",
     "pg-native": "^2.2.0",
     "request": "^2.81.0",
     "slack": "^8.3.1"
